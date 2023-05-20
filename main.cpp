@@ -44,32 +44,42 @@ int main() {
 
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
+    glEnable(GL_DEPTH_TEST); // Depth Testing
+    glDepthFunc(GL_LEQUAL);
+    glDisable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
     app.initialize();
 
-    ThreeD::Mesh testMesh;
-    testMesh.polygonCount = 2;
-    testMesh.polygons = new ThreeD::Polygon[2];
+    ThreeD::Mesh testCube;
+    testCube.vertices = new ThreeD::Vertex[8];
 
-    ThreeD::Polygon bigTriangle;
-    ThreeD::Polygon smallTriangle;
+    testCube.vertices[0].position = { -1, -1, -1 };
+    testCube.vertices[0].color = { 0.5, 0.5, 0.5};
 
-    bigTriangle.vertexCount = 3;
-    bigTriangle.vertices = new ThreeD::Vertex[3];
-    bigTriangle.vertices[0] = ThreeD::Vertex(Math::Vector3(-0.8f, -0.8f, -1.f), Math::Vector3(1.f, 0.f, 0.f));
-    bigTriangle.vertices[1] = ThreeD::Vertex(Math::Vector3(0.8f, -0.8f, -1.f), Math::Vector3(0.f, 1.f, 0.f));
-    bigTriangle.vertices[2] = ThreeD::Vertex(Math::Vector3(0.f, 0.8f, -1.f), Math::Vector3(0.f, 0.f, 1.f));
+    testCube.vertices[1].position = { -1, 1, -1 };
+    testCube.vertices[1].color = { 0, 1, 0};
 
+    testCube.vertices[2].position = { 1, 1, -1 };
+    testCube.vertices[2].color = { 1, 1, 0};
 
-    smallTriangle.vertexCount = 3;
-    smallTriangle.vertices = new ThreeD::Vertex[3];
-    smallTriangle.vertices[0] = ThreeD::Vertex(Math::Vector3(-0.5f, -0.5f, 1.0f), Math::Vector3(0.f, 0.f, 1.f));
-    smallTriangle.vertices[1] = ThreeD::Vertex(Math::Vector3(0.5f, -0.5f, 1.0f), Math::Vector3(0.f, 1.f, 0.f));
-    smallTriangle.vertices[2] = ThreeD::Vertex(Math::Vector3(0.f, 0.5f, 1.0f), Math::Vector3(1.f, 0.f, 0.f));
+    testCube.vertices[3].position = { 1, -1, -1 };
+    testCube.vertices[3].color = { 1, 0, 0};
 
-    testMesh.polygons[1] = bigTriangle;
-    testMesh.polygons[0] = smallTriangle;
+    testCube.vertices[4].position = { 1, -1, 1 };
+    testCube.vertices[4].color = { 1, 0, 1};
 
-    meshes[0] = testMesh;
+    testCube.vertices[5].position = { 1, 1, 1 };
+    testCube.vertices[5].color = { 1, 1, 1};
+
+    testCube.vertices[6].position = { -1, 1, 1 };
+    testCube.vertices[6].color = { 0, 1, 1};
+
+    testCube.vertices[7].position = { -1, -1, 1 };
+    testCube.vertices[7].color = { 0, 0, 1};
+
+    testCube.vertexCount = 8;
+
+    meshes[0] = testCube;
 
     while (!glfwWindowShouldClose(window))
     {

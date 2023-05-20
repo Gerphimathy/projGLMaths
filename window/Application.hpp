@@ -4,6 +4,7 @@
 #include <cstdint>
 #include "../shaders/GLShader.hpp"
 #include "../ThreeD/Vertex.hpp"
+#include "../math/Matrix.hpp"
 
 namespace Window {
     struct Application
@@ -26,10 +27,10 @@ namespace Window {
             GLenum error = glewInit();
 
             m_basicShader.LoadVertexShader(
-                    "basic.vs.glsl"
+                    "../shaders/basic/basic.vs.glsl"
             );
             m_basicShader.LoadFragmentShader(
-                    "basic.fs.glsl"
+                    "../shaders/basic/basic.fs.glsl"
             );
             m_basicShader.Create();
 
@@ -48,7 +49,6 @@ namespace Window {
             glScissor(0, 0, m_width, m_height);
 
             glClearColor(0.f, 0.f, 0.f, 1.f);
-            glClear(GL_COLOR_BUFFER_BIT);
 
             for (uint32_t i = 0; i < meshCount; ++i) {
                 meshes[i].Render(&m_basicShader);

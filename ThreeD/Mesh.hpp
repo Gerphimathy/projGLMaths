@@ -6,20 +6,38 @@
 
 #include <cstdint>
 #include "Vertex.hpp"
-#include "Polygon.hpp"
+#include "../shaders/GLShader.hpp"
 
 namespace ThreeD {
     struct Mesh{
-        ThreeD::Polygon* polygons;
-        uint32_t polygonCount;
+        ThreeD::Vertex* vertices;
+        uint32_t vertexCount;
 
-        Mesh() : polygons(nullptr), polygonCount(0) {};
-        Mesh(ThreeD::Polygon* polygons, uint32_t polygonCount) : polygons(polygons), polygonCount(polygonCount) {};
+        void Render(GLShader *shader){
+            static float alpha = 0;
+            //attempt to rotate cube
+            glRotatef(alpha, 0, 1, 0);
+            alpha += 0.5f;
 
-        void Render(GLShader* shader) const{
-            for (int i = 0; i < polygonCount; i++) {
-                polygons[i].Render(shader);
-            }
+            uint32_t program =
+                    shader->GetProgram();
+            glUseProgram(program);
+
+            const int32_t POSITION = glGetAttribLocation(
+                    program, "a_Position");
+            const int32_t COLOR = glGetAttribLocation(
+                    program, "a_Color");
+
+            glEnableVertexAttribArray(POSITION);
+            glVertexAttribPointer(POSITION, 3, GL_DOUBLE, false,
+                                  sizeof(ThreeD::Vertex),
+                                  &vertices->position);
+            glEnableVertexAttribArray(COLOR);
+            glVertexAttribPointer(COLOR, 3, GL_DOUBLE, false,
+                                  sizeof(ThreeD::Vertex),
+                                  &vertices->color);
+
+            glDrawArrays(GL_TRIANGLES, 0, vertexCount);
         }
     };
 }
