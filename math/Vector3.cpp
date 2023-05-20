@@ -8,8 +8,6 @@
 namespace Math {
     Vector3::Vector3(double x, double y, double z) : x(x), y(y), z(z) {}
 
-    Vector3::Vector3() {}
-
     double Vector3::getX() const {
         return x;
     }

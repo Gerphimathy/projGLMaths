@@ -25,6 +25,14 @@ namespace Window {
 
             GLenum error = glewInit();
 
+            m_basicShader.LoadVertexShader(
+                    "basic.vs.glsl"
+            );
+            m_basicShader.LoadFragmentShader(
+                    "basic.fs.glsl"
+            );
+            m_basicShader.Create();
+
             return true;
         }
 
@@ -33,30 +41,18 @@ namespace Window {
             m_basicShader.Destroy();
         }
 
-        void render()
-        {
+        void render(ThreeD::Mesh* meshes, uint32_t meshCount) {
             glEnable(GL_SCISSOR_TEST);
 
             glViewport(0, 0, m_width, m_height);
             glScissor(0, 0, m_width, m_height);
 
+            glClearColor(0.f, 0.f, 0.f, 1.f);
             glClear(GL_COLOR_BUFFER_BIT);
 
-            uint32_t program =
-                    m_basicShader.GetProgram();
-            glUseProgram(program);
-
-            const int32_t POSITION = glGetAttribLocation(
-                    program, "a_Position");
-            const int32_t COLOR = glGetAttribLocation(
-                    program, "a_Color");
-
-            const auto temps = static_cast<float>(
-                    glfwGetTime());
-            const int32_t TIME =
-                    glGetUniformLocation(program, "u_Time");
-            glUniform1f(TIME, temps);
-
+            for (uint32_t i = 0; i < meshCount; ++i) {
+                meshes[i].Render(&m_basicShader);
+            }
 
             glDisable(GL_SCISSOR_TEST);
         }

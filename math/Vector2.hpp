@@ -14,7 +14,7 @@ namespace Math {
 
         Vector2(double x, double y);
 
-        Vector2();
+        Vector2() : Vector2(0, 0) {};
 
         double getX() const;
 

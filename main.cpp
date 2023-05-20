@@ -6,6 +6,10 @@
 #include <ostream>
 #include <cmath>
 #include <iostream>
+#include <cstdint>
+#include <list>
+
+#include "ThreeD/Mesh.hpp"
 
 #ifdef _MSC_VER
 #define DLLEXPORT __declspec(dllexport)
@@ -27,10 +31,11 @@ extern "C"
 int main() {
     Window::Application app;
     GLFWwindow* window;
+    auto* meshes = new ThreeD::Mesh[1];
 
     if (!glfwInit()) return -1;
 
-    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+    window = glfwCreateWindow(640, 480, "Projet OpenGL & Maths", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -41,13 +46,38 @@ int main() {
     glfwSwapInterval(1);
     app.initialize();
 
+    ThreeD::Mesh testMesh;
+    testMesh.polygonCount = 2;
+    testMesh.polygons = new ThreeD::Polygon[2];
+
+    ThreeD::Polygon bigTriangle;
+    ThreeD::Polygon smallTriangle;
+
+    bigTriangle.vertexCount = 3;
+    bigTriangle.vertices = new ThreeD::Vertex[3];
+    bigTriangle.vertices[0] = ThreeD::Vertex(Math::Vector3(-0.8f, -0.8f, -1.f), Math::Vector3(1.f, 0.f, 0.f));
+    bigTriangle.vertices[1] = ThreeD::Vertex(Math::Vector3(0.8f, -0.8f, -1.f), Math::Vector3(0.f, 1.f, 0.f));
+    bigTriangle.vertices[2] = ThreeD::Vertex(Math::Vector3(0.f, 0.8f, -1.f), Math::Vector3(0.f, 0.f, 1.f));
+
+
+    smallTriangle.vertexCount = 3;
+    smallTriangle.vertices = new ThreeD::Vertex[3];
+    smallTriangle.vertices[0] = ThreeD::Vertex(Math::Vector3(-0.5f, -0.5f, 1.0f), Math::Vector3(0.f, 0.f, 1.f));
+    smallTriangle.vertices[1] = ThreeD::Vertex(Math::Vector3(0.5f, -0.5f, 1.0f), Math::Vector3(0.f, 1.f, 0.f));
+    smallTriangle.vertices[2] = ThreeD::Vertex(Math::Vector3(0.f, 0.5f, 1.0f), Math::Vector3(1.f, 0.f, 0.f));
+
+    testMesh.polygons[1] = bigTriangle;
+    testMesh.polygons[0] = smallTriangle;
+
+    meshes[0] = testMesh;
+
     while (!glfwWindowShouldClose(window))
     {
         int width, height;
         glfwGetFramebufferSize(window, &width, &height);
         app.setSize(width, height);
 
-        app.render();
+        app.render(meshes, 1);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
