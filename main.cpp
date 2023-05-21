@@ -12,6 +12,8 @@
 #include "ThreeD/Mesh.hpp"
 #include "TestObjects/DragonData.h"
 
+#include "tinyObjLoader/loadMesh.h"
+
 #ifdef _MSC_VER
 #define DLLEXPORT __declspec(dllexport)
 #else
@@ -23,9 +25,6 @@ extern "C"
     DLLEXPORT unsigned long NvOptimusEnablement = 0x00000001;
     DLLEXPORT int AmdPowerXpressRequestHighPerformance = 1;
 }
-
-#define TINYOBJLOADER_IMPLEMENTATION
-#include "tinyObjLoader/tiny_obj_loader.h"
 
 #include "window/Application.hpp"
 
@@ -54,10 +53,13 @@ int main() {
 
     meshes[0] = *mesh;
 
+    auto* mesh2 = new ThreeD::Mesh();
+    loadMesh(mesh2, "../TestObjects/cube.obj", "../TestObjects/materials/");
+    meshes[1] = *mesh2;
 
     while (!glfwWindowShouldClose(window))
     {
-        app.render(window, meshes, 1);
+        app.render(window, meshes, 2);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

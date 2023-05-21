@@ -45,10 +45,10 @@ namespace Window {
             glClearColor(0.0f, 0.0f, 0.0f, 1.f);
 
             const int stride = sizeof(ThreeD::Vertex);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             //TODO: tester le multi-mesh
             for (int i = 0; i < meshCount; ++i) {
-                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
                 float time = glfwGetTime();
 

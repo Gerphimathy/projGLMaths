@@ -5,6 +5,8 @@
 #ifndef OPENGL_101_VECTOR2_HPP
 #define OPENGL_101_VECTOR2_HPP
 
+#include <iostream>
+
 namespace Math {
 
     struct Vector2 {
@@ -26,7 +28,7 @@ namespace Math {
 
         double Norm();
 
-        double operator[](int i) const { return (&x)[i]; }
+        double operator[](int i) const { return (&x)[i]; };
     };
 
 

@@ -5,6 +5,8 @@
 #ifndef OPENGL_101_VECTOR3_HPP
 #define OPENGL_101_VECTOR3_HPP
 
+#include <iostream>
+
 namespace Math {
 
     struct Vector3 {
@@ -31,7 +33,8 @@ namespace Math {
 
         double Norm();
 
-        double operator[](int i) const { return (&x)[i]; }
+        double operator[](int i) const { return (&x)[i]; };
+
     };
 
 } // Math

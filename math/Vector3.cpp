@@ -36,3 +36,8 @@ namespace Math {
         return std::sqrt(x*x + y*y + z*z);
     }
 } // Math
+
+std::ostream& operator<<(std::ostream& os, const Math::Vector3& v){
+    os << "(" << v.x << ", " << v.y << ", " << v.z << ")";
+    return os;
+}

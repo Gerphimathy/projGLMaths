@@ -27,7 +27,9 @@ namespace Math{
     double Vector2::Norm() {
         return std::sqrt(x*x + y*y);
     }
+}
 
-
-
+std::ostream& operator<<(std::ostream& os, const Math::Vector2& v){
+    os << "(" << v.x << ", " << v.y << ")";
+    return os;
 }

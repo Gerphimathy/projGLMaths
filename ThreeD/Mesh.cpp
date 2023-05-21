@@ -11,7 +11,7 @@ namespace ThreeD{
 
             vertices[i].normal = {array[i*8+3], array[i*8+4], array[i*8+5]};
 
-            vertices[i].uv = {array[i*8+6], array[i*8+7]};
+            vertices[i].texcoords = {array[i * 8 + 6], array[i * 8 + 7]};
         }
     }
 }

@@ -15,7 +15,7 @@ add_executable(math
         math/Vector2.cpp
         math/Vector2.hpp
         math/Vector3.cpp
-        math/Vector3.hpp ThreeD/Vertex.hpp ThreeD/Mesh.hpp window/Application.hpp shaders/GLShader.cpp shaders/GLShader.hpp ThreeD/Mesh.cpp)
+        math/Vector3.hpp ThreeD/Vertex.hpp ThreeD/Mesh.hpp window/Application.hpp shaders/GLShader.cpp shaders/GLShader.hpp ThreeD/Mesh.cpp tinyObjLoader/loadMesh.h)
 
 
 target_link_libraries(math ${OPENGL_LIBRARIES} glfw3 glew32)
