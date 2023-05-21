@@ -63,8 +63,8 @@ namespace Window {
                         0.0f, 0.0f, -20.0f, 1.0f
                 };
 
-                const auto loc_rotz_mat = glGetUniformLocation(program, "u_rotationMatrix");
-                glUniformMatrix4fv(loc_rotz_mat, 1, GL_FALSE, rotationMatrix);
+                const auto ROT_MAT = glGetUniformLocation(program, "u_rotationMatrix");
+                glUniformMatrix4fv(ROT_MAT, 1, GL_FALSE, rotationMatrix);
 
                 const float aspectRatio = float(width)/float(height);
                 const float zNear = 0.1f, zFar = 100.0f;
@@ -89,8 +89,8 @@ namespace Window {
                 glVertexAttribPointer(COLOR, 3, GL_DOUBLE, GL_FALSE, stride, &meshes[i].vertices->normal);
                 glEnableVertexAttribArray(COLOR);
 
-                const auto loc_time = glGetUniformLocation(program,"u_time");
-                glUniform1f(loc_time, time);
+                const auto TIME = glGetUniformLocation(program,"u_time");
+                glUniform1f(TIME, time);
 
                 glDrawElements(GL_TRIANGLES, meshes[i].indicesCount, GL_UNSIGNED_SHORT, meshes[i].indices);
             }
