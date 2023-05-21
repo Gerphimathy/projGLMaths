@@ -10,6 +10,7 @@
 #include <list>
 
 #include "ThreeD/Mesh.hpp"
+#include "DragonData.h"
 
 #ifdef _MSC_VER
 #define DLLEXPORT __declspec(dllexport)
@@ -44,50 +45,18 @@ int main() {
 
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
-    glEnable(GL_DEPTH_TEST); // Depth Testing
-    glDepthFunc(GL_LEQUAL);
-    glDisable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
     app.initialize();
 
-    ThreeD::Mesh testCube;
-    testCube.vertices = new ThreeD::Vertex[8];
+    auto* mesh = new ThreeD::Mesh();
+    mesh->CastFromArray(DragonVertices, sizeof(DragonVertices) / sizeof(DragonVertices[0]));
+    mesh->indices = DragonIndices;
+    mesh->indicesCount = sizeof(DragonIndices) / sizeof(DragonIndices[0]);
 
-    testCube.vertices[0].position = { -1, -1, -1 };
-    testCube.vertices[0].color = { 0.5, 0.5, 0.5};
-
-    testCube.vertices[1].position = { -1, 1, -1 };
-    testCube.vertices[1].color = { 0, 1, 0};
-
-    testCube.vertices[2].position = { 1, 1, -1 };
-    testCube.vertices[2].color = { 1, 1, 0};
-
-    testCube.vertices[3].position = { 1, -1, -1 };
-    testCube.vertices[3].color = { 1, 0, 0};
-
-    testCube.vertices[4].position = { 1, -1, 1 };
-    testCube.vertices[4].color = { 1, 0, 1};
-
-    testCube.vertices[5].position = { 1, 1, 1 };
-    testCube.vertices[5].color = { 1, 1, 1};
-
-    testCube.vertices[6].position = { -1, 1, 1 };
-    testCube.vertices[6].color = { 0, 1, 1};
-
-    testCube.vertices[7].position = { -1, -1, 1 };
-    testCube.vertices[7].color = { 0, 0, 1};
-
-    testCube.vertexCount = 8;
-
-    meshes[0] = testCube;
+    meshes[0] = *mesh;
 
     while (!glfwWindowShouldClose(window))
     {
-        int width, height;
-        glfwGetFramebufferSize(window, &width, &height);
-        app.setSize(width, height);
-
-        app.render(meshes, 1);
+        app.render(window, meshes, 1);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

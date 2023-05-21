@@ -1,10 +1,10 @@
-#version 120 
+#version 120
 
-varying vec4 v_Color;
+varying vec4 v_color;
 
-// vec4 gl_FragColor; // predefinie
+uniform float u_time;
 
 void main(void)
 {
-	gl_FragColor = v_Color;
+	gl_FragColor = v_color + vec4(mod(u_time, 1.0), vec3(0.0));
 }

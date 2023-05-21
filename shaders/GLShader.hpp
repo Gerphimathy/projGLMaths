@@ -5,9 +5,9 @@
 class GLShader
 {
     private:
-        // un programme fait le liens entre Vertex Shader et Fragment Shader
+        // un programme fait le liens entre ParsinVertex Shader et Fragment Shader
         uint32_t m_Program;
-        // Un Vertex Shader est execute pour chaque sommet (vertex)
+        // Un ParsinVertex Shader est execute pour chaque sommet (vertex)
         uint32_t m_VertexShader;
         // Un Geometry Shader est execute pour chaque primitive
         uint32_t m_GeometryShader;

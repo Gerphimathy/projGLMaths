@@ -30,6 +30,8 @@ namespace Math {
         void setZ(double z);
 
         double Norm();
+
+        double operator[](int i) const { return (&x)[i]; }
     };
 
 } // Math

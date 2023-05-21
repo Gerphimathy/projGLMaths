@@ -25,6 +25,8 @@ namespace Math {
         void setY(double y);
 
         double Norm();
+
+        double operator[](int i) const { return (&x)[i]; }
     };
 
 
