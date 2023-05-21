@@ -5,8 +5,6 @@ attribute vec3 a_color;
 
 varying vec4 v_color;
 
-uniform float u_time;
-
 uniform mat4 u_rotationMatrix;
 uniform mat4 u_projectionMatrix;
 

@@ -10,7 +10,7 @@
 #include <list>
 
 #include "ThreeD/Mesh.hpp"
-#include "DragonData.h"
+#include "TestObjects/DragonData.h"
 
 #ifdef _MSC_VER
 #define DLLEXPORT __declspec(dllexport)
@@ -32,7 +32,7 @@ extern "C"
 int main() {
     Window::Application app;
     GLFWwindow* window;
-    auto* meshes = new ThreeD::Mesh[1];
+    auto* meshes = new ThreeD::Mesh[2];
 
     if (!glfwInit()) return -1;
 
@@ -53,6 +53,7 @@ int main() {
     mesh->indicesCount = sizeof(DragonIndices) / sizeof(DragonIndices[0]);
 
     meshes[0] = *mesh;
+
 
     while (!glfwWindowShouldClose(window))
     {
