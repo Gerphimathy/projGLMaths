@@ -2,10 +2,10 @@
 
 namespace ThreeD {
     struct Texture {
+        unsigned int id;
         std::string path;
-        int width = 0;
-        int height = 0;
-        int channels = 0;
-        unsigned char* data;
+        int width;
+        int height;
+        int channels;
     };
 }
