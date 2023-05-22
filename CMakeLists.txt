@@ -8,6 +8,7 @@ find_package(GLEW REQUIRED)
 
 add_executable(math
         main.cpp
+
         math/Matrix.cpp
         math/Matrix.hpp
         math/Quaternion.cpp
@@ -15,7 +16,21 @@ add_executable(math
         math/Vector2.cpp
         math/Vector2.hpp
         math/Vector3.cpp
-        math/Vector3.hpp ThreeD/Vertex.hpp ThreeD/Mesh.hpp window/Application.hpp shaders/GLShader.cpp shaders/GLShader.hpp ThreeD/Mesh.cpp tinyObjLoader/loadMesh.h ThreeD/Material.hpp)
+        math/Vector3.hpp
+
+        ThreeD/Vertex.hpp
+        ThreeD/Mesh.hpp
+        ThreeD/Material.hpp
+        ThreeD/Texture.hpp
+        ThreeD/Mesh.cpp
+
+        window/Application.hpp
+
+        shaders/GLShader.cpp
+        shaders/GLShader.hpp
+
+        loader/loadMesh.h
+        loader/stb_image.h)
 
 
 target_link_libraries(math ${OPENGL_LIBRARIES} glfw3 glew32)

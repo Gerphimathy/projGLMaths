@@ -1,4 +1,4 @@
-#version 120
+#version 330 core
 
 varying vec4 v_color;
 
@@ -30,6 +30,9 @@ uniform mat4 u_rotationMatrix;
 uniform mat4 u_projectionMatrix;
 
 in vec3 FragPos;
+
+in vec2 a_texCoord;
+uniform sampler2D u_texture;
 
 void main(void)
 {
