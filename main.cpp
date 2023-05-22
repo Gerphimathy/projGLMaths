@@ -46,15 +46,26 @@ int main() {
     glfwSwapInterval(1);
     app.initialize();
 
+    auto* basicShader = new GLShader();
+    basicShader->LoadVertexShader(
+            "../shaders/basic/basic.vs.glsl"
+    );
+    basicShader->LoadFragmentShader(
+            "../shaders/basic/basic.fs.glsl"
+    );
+    basicShader->Create();
+
     auto* mesh = new ThreeD::Mesh();
     mesh->CastFromArray(DragonVertices, sizeof(DragonVertices) / sizeof(DragonVertices[0]));
     mesh->indices = DragonIndices;
     mesh->indicesCount = sizeof(DragonIndices) / sizeof(DragonIndices[0]);
+    mesh->shader = basicShader;
 
     meshes[0] = *mesh;
 
     auto* mesh2 = new ThreeD::Mesh();
     loadMesh(mesh2, "../TestObjects/cube.obj", "../TestObjects/materials/");
+    mesh2->shader = basicShader;
     meshes[1] = *mesh2;
 
     while (!glfwWindowShouldClose(window))
@@ -65,7 +76,7 @@ int main() {
         glfwPollEvents();
     }
 
-    app.deinitialize();
+    app.deinitialize(meshes, 2);
 
     glfwTerminate();
     return 0;

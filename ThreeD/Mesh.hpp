@@ -12,10 +12,17 @@ namespace ThreeD {
     struct Mesh{
         ThreeD::Vertex* vertices;
         uint32_t vertexCount;
+
         Math::Vector3 position;
+
         uint16_t* indices;
         uint32_t indicesCount;
 
+        //Material
+        GLShader* shader;
+
         void CastFromArray(const float* array, int size);
+
+        void loadShader(const char* vertexShader, const char* fragmentShader);
     };
 }
