@@ -1,5 +1,6 @@
 #include <iostream>
 #include "Mesh.hpp"
+#include "../shaders/GLShader.hpp"
 
 namespace ThreeD{
     void Mesh::CastFromArray(const float* array, int size){
@@ -13,5 +14,16 @@ namespace ThreeD{
 
             vertices[i].texcoords = {array[i * 8 + 6], array[i * 8 + 7]};
         }
+    }
+
+    void Mesh::loadShader(const char* vertexShader, const char* fragmentShader){
+        shader = new GLShader();
+        shader->LoadVertexShader(
+                vertexShader
+        );
+        shader->LoadFragmentShader(
+                fragmentShader
+        );
+        shader->Create();
     }
 }

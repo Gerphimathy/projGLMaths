@@ -9,8 +9,6 @@
 namespace Window {
     struct Application
     {
-        GLShader m_basicShader;
-
         bool initialize()
         {
             std::cout << "Pilote : " << glGetString(GL_RENDERER) << std::endl;
@@ -18,20 +16,14 @@ namespace Window {
 
             GLenum error = glewInit();
 
-            m_basicShader.LoadVertexShader(
-                    "../shaders/basic/basic.vs.glsl"
-            );
-            m_basicShader.LoadFragmentShader(
-                    "../shaders/basic/basic.fs.glsl"
-            );
-            m_basicShader.Create();
-
             return true;
         }
 
-        void deinitialize()
+        void deinitialize(ThreeD::Mesh* meshes, uint32_t meshCount)
         {
-            m_basicShader.Destroy();
+            for (int i = 0; i < meshCount; ++i) {
+                meshes[i].shader->Destroy();
+            }
         }
 
         void render(GLFWwindow* window, ThreeD::Mesh* meshes, uint32_t meshCount) {
@@ -47,12 +39,11 @@ namespace Window {
             const int stride = sizeof(ThreeD::Vertex);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            //TODO: tester le multi-mesh
             for (int i = 0; i < meshCount; ++i) {
 
                 float time = glfwGetTime();
 
-                const auto program = m_basicShader.GetProgram();
+                const auto program = meshes[i].shader->GetProgram();
                 glUseProgram(program);
 
                 // une matrice OpenGL est definie en COLONNE
