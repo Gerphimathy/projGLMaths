@@ -10,6 +10,7 @@
 #include <list>
 
 #include "ThreeD/Mesh.hpp"
+#include "ThreeD/Material.hpp"
 #include "TestObjects/DragonData.h"
 
 #include "tinyObjLoader/loadMesh.h"
@@ -60,12 +61,20 @@ int main() {
     mesh->indices = DragonIndices;
     mesh->indicesCount = sizeof(DragonIndices) / sizeof(DragonIndices[0]);
     mesh->shader = basicShader;
+    mesh->material = ThreeD::Material();
+    mesh->material.diffuse = Math::Vector3(0.07568f, 0.61424f, 0.07568f);
+    mesh->material.ambient = Math::Vector3(0.0215f, 0.1745f, 0.0215f);
+    mesh->material.specular = Math::Vector3(0.633f, 0.727811f,0.633f);
+    mesh->material.shininess =  76.8f;
+    mesh->name = "Dragon";
 
     meshes[0] = *mesh;
 
     auto* mesh2 = new ThreeD::Mesh();
     loadMesh(mesh2, "../TestObjects/cube.obj", "../TestObjects/materials/");
     mesh2->shader = basicShader;
+    mesh2->name = "Cube";
+
     meshes[1] = *mesh2;
 
     while (!glfwWindowShouldClose(window))

@@ -9,12 +9,26 @@
 namespace Window {
     struct Application
     {
+        struct Light{
+            Math::Vector3 position;
+            Math::Vector3 ambient;
+            Math::Vector3 diffuse;
+            Math::Vector3 specular;
+            Math::Vector3 color;
+        } light;
+
         bool initialize()
         {
             std::cout << "Pilote : " << glGetString(GL_RENDERER) << std::endl;
             std::cout << "OpenGL : " << glGetString(GL_VERSION) << std::endl;
 
             GLenum error = glewInit();
+
+            light.position = Math::Vector3(0.0f, 0.9f, 0.0f);
+            light.ambient = Math::Vector3(0.5f, 0.5f, 0.5f);
+            light.diffuse = Math::Vector3(0.5f, 0.5f, 0.5f);
+            light.specular = Math::Vector3(1.0f, 1.0f, 1.0f);
+            light.color = Math::Vector3(1.0f, 1.0f, 1.0f);
 
             return true;
         }
@@ -28,6 +42,7 @@ namespace Window {
 
         void render(GLFWwindow* window, ThreeD::Mesh* meshes, uint32_t meshCount) {
             int width, height;
+            GLenum err;
             glfwGetWindowSize(window, &width, &height);
 
             glEnable(GL_CULL_FACE);
@@ -40,12 +55,13 @@ namespace Window {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             for (int i = 0; i < meshCount; ++i) {
-
+                std::cerr << "Mesh " << i << ": " << meshes[i].name << std::endl;
                 float time = glfwGetTime();
 
                 const auto program = meshes[i].shader->GetProgram();
                 glUseProgram(program);
 
+                //CAMERA
                 // une matrice OpenGL est definie en COLONNE
                 float rotationMatrix[16] = {
                         cosf(time), 0.f, -sinf(time), 0.0f,
@@ -71,19 +87,78 @@ namespace Window {
                 const auto PROJ_MAT = glGetUniformLocation(program, "u_projectionMatrix");
                 glUniformMatrix4fv(PROJ_MAT, 1, GL_FALSE, projectionMatrix);
 
-                const auto POSITION = glGetAttribLocation(program,"a_position");
-                const auto COLOR = glGetAttribLocation(program,"a_color");
-
-                glVertexAttribPointer(POSITION, 3, GL_DOUBLE, GL_FALSE, stride, &meshes[i].vertices->position);
-                glEnableVertexAttribArray(POSITION);
-
-                glVertexAttribPointer(COLOR, 3, GL_DOUBLE, GL_FALSE, stride, &meshes[i].vertices->normal);
-                glEnableVertexAttribArray(COLOR);
-
                 const auto TIME = glGetUniformLocation(program,"u_time");
                 glUniform1f(TIME, time);
 
+                while ((err = glGetError()) != GL_NO_ERROR) {
+                    std::cerr << "OpenGL error on camera: " << err << std::endl;
+                }
+
+
+                //VERTEX
+                const auto POSITION = glGetAttribLocation(program,"a_position");
+                glVertexAttribPointer(POSITION, 3, GL_DOUBLE, GL_FALSE, stride, &meshes[i].vertices->position);
+                glEnableVertexAttribArray(POSITION);
+
+                const auto COLOR = glGetAttribLocation(program,"a_color");
+                glVertexAttribPointer(COLOR, 3, GL_DOUBLE, GL_FALSE, stride, &meshes[i].vertices->normal);
+                glEnableVertexAttribArray(COLOR);
+
+                while ((err = glGetError()) != GL_NO_ERROR) {
+                    std::cerr << "OpenGL error on vertex: " << err << std::endl;
+                }
+
+                //LIGHT
+                auto* lightPosition = new GLfloat[3] {(float) light.position.x, (float) light.position.y, (float) light.position.z};
+                const auto LIGHT_POSITION = glGetUniformLocation(program,"u_light.position");
+                glUniform3fv(LIGHT_POSITION, 1, lightPosition);
+
+                auto* lightAmbient = new GLfloat[3] {(float) light.ambient.x, (float) light.ambient.y, (float) light.ambient.z};
+                const auto LIGHT_AMBIENT = glGetUniformLocation(program,"u_light.ambient");
+                glUniform3fv(LIGHT_AMBIENT, 1, lightAmbient);
+
+                auto* lightDiffuse = new GLfloat[3] {(float) light.diffuse.x, (float) light.diffuse.y, (float) light.diffuse.z};
+                const auto LIGHT_DIFFUSE = glGetUniformLocation(program,"u_light.diffuse");
+                glUniform3fv(LIGHT_DIFFUSE, 1, lightDiffuse);
+
+                auto * lightSpecular = new GLfloat[3] {(float) light.specular.x, (float) light.specular.y, (float) light.specular.z};
+                const auto LIGHT_SPECULAR = glGetUniformLocation(program,"u_light.specular");
+                glUniform3fv(LIGHT_SPECULAR, 1, lightSpecular);
+
+                auto * lightColor = new GLfloat[3] {(float) light.color.x, (float) light.color.y, (float) light.color.z};
+                const auto LIGHT_COLOR = glGetUniformLocation(program,"u_light.color");
+                glUniform3fv(LIGHT_COLOR, 1, lightColor);
+
+                while ((err = glGetError()) != GL_NO_ERROR) {
+                    std::cerr << "OpenGL error on light: " << err << std::endl;
+                }
+
+                //MATERIAL
+                auto* materialAmbient = new GLfloat[3] {(float) meshes[i].material.ambient.x, (float) meshes[i].material.ambient.y, (float) meshes[i].material.ambient.z};
+                const auto MATERIAL_AMBIENT = glGetUniformLocation(program,"u_material.ambient");
+                glUniform3fv(MATERIAL_AMBIENT, 1, materialAmbient);
+
+                auto* materialDiffuse = new GLfloat[3] {(float) meshes[i].material.diffuse.x, (float) meshes[i].material.diffuse.y, (float) meshes[i].material.diffuse.z};
+                const auto MATERIAL_DIFFUSE = glGetUniformLocation(program,"u_material.diffuse");
+                glUniform3fv(MATERIAL_DIFFUSE, 1, materialDiffuse);
+
+                auto* materialSpecular = new GLfloat[3] {(float) meshes[i].material.specular.x, (float) meshes[i].material.specular.y, (float) meshes[i].material.specular.z};
+                const auto MATERIAL_SPECULAR = glGetUniformLocation(program,"u_material.specular");
+                glUniform3fv(MATERIAL_SPECULAR, 1, materialSpecular);
+
+                const auto MATERIAL_SHININESS = glGetUniformLocation(program,"u_material.shininess");
+                glUniform1f(MATERIAL_SHININESS, meshes[i].material.shininess);
+
+                while ((err = glGetError()) != GL_NO_ERROR) {
+                    std::cerr << "OpenGL error on mat: " << err << std::endl;
+                }
+
+                //DRAW
                 glDrawElements(GL_TRIANGLES, meshes[i].indicesCount, GL_UNSIGNED_SHORT, meshes[i].indices);
+                while ((err = glGetError()) != GL_NO_ERROR) {
+                    std::cerr << "OpenGL error on draw: " << err << std::endl;
+                }
+                std::cerr << "Mesh Drawn" << std::endl << std::endl;
             }
         }
     };

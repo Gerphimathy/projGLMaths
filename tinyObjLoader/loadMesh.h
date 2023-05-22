@@ -82,5 +82,14 @@ void loadMesh(ThreeD::Mesh* output , const char* inputFile, const char* material
     for (int i = 0; i < output->indicesCount; ++i) {
         output->indices[i] = shapes[0].mesh.indices[i].vertex_index;
     }
+
+    //TODO: (Mais un peu compliqué, bonus si il nous reste du temps) Mono material
+    for (auto mat = objmaterials.begin(); mat < objmaterials.end(); ++mat) {
+        output->material.ambient = Math::Vector3(mat->ambient[0], mat->ambient[1], mat->ambient[2]);
+        output->material.diffuse = Math::Vector3(mat->diffuse[0], mat->diffuse[1], mat->diffuse[2]);
+        output->material.specular = Math::Vector3(mat->specular[0], mat->specular[1], mat->specular[2]);
+        output->material.shininess = mat->shininess;
+    }
+
     std::cout << "Model loaded: " << warn << std::endl;
 }

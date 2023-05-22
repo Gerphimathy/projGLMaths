@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include "Vertex.hpp"
+#include "Material.hpp"
 #include "../shaders/GLShader.hpp"
 
 namespace ThreeD {
@@ -20,6 +21,9 @@ namespace ThreeD {
 
         //Material
         GLShader* shader;
+        Material material;
+
+        std::string name;
 
         void CastFromArray(const float* array, int size);
 
