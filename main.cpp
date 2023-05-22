@@ -10,9 +10,10 @@
 #include <list>
 
 #include "ThreeD/Mesh.hpp"
+#include "ThreeD/Material.hpp"
 #include "TestObjects/DragonData.h"
 
-#include "tinyObjLoader/loadMesh.h"
+#include "loader/loadMesh.h"
 
 #ifdef _MSC_VER
 #define DLLEXPORT __declspec(dllexport)
@@ -31,7 +32,7 @@ extern "C"
 int main() {
     Window::Application app;
     GLFWwindow* window;
-    auto* meshes = new ThreeD::Mesh[2];
+    auto* meshes = new ThreeD::Mesh[3];
 
     if (!glfwInit()) return -1;
 
@@ -55,18 +56,37 @@ int main() {
     );
     basicShader->Create();
 
+    /**
+      IMPORTANT: Models MUST be smooth shaded
+     * **/
+
     auto* mesh = new ThreeD::Mesh();
     mesh->CastFromArray(DragonVertices, sizeof(DragonVertices) / sizeof(DragonVertices[0]));
     mesh->indices = DragonIndices;
     mesh->indicesCount = sizeof(DragonIndices) / sizeof(DragonIndices[0]);
     mesh->shader = basicShader;
+    mesh->material = ThreeD::Material();
+    mesh->material.diffuse = Math::Vector3(0.07568f, 0.61424f, 0.07568f);
+    mesh->material.ambient = Math::Vector3(0.0215f, 0.1745f, 0.0215f);
+    mesh->material.specular = Math::Vector3(0.633f, 0.727811f,0.633f);
+    mesh->material.shininess =  250.f;
+    mesh->name = "Dragon";
 
     meshes[0] = *mesh;
 
     auto* mesh2 = new ThreeD::Mesh();
-    loadMesh(mesh2, "../TestObjects/cube.obj", "../TestObjects/materials/");
+    loadObjMesh(mesh2, "../TestObjects/cube.obj", "../TestObjects/materials/");
     mesh2->shader = basicShader;
-    meshes[1] = *mesh2;
+    mesh2->name = "Cube";
+
+    meshes[2] = *mesh2;
+
+    auto* mesh3 = new ThreeD::Mesh();
+    loadObjMesh(mesh3, "../TestObjects/ube_wood.obj", "../TestObjects/materials/");
+    mesh3->shader = basicShader;
+    mesh3->name = "Cube Wood";
+
+    meshes[1] = *mesh3;
 
     while (!glfwWindowShouldClose(window))
     {
@@ -76,7 +96,7 @@ int main() {
         glfwPollEvents();
     }
 
-    app.deinitialize(meshes, 2);
+    app.deinitialize(meshes, 3);
 
     glfwTerminate();
     return 0;
