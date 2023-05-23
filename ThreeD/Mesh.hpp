@@ -8,6 +8,7 @@
 #include "Vertex.hpp"
 #include "Material.hpp"
 #include "../shaders/GLShader.hpp"
+#include "../math/Quaternion.hpp"
 
 namespace ThreeD {
     struct Mesh{
@@ -15,6 +16,8 @@ namespace ThreeD {
         uint32_t vertexCount;
 
         Math::Vector3 position;
+        Math::Quaternion rotation;
+        Math::Vector3 scale;
 
         uint16_t* indices;
         uint32_t indicesCount;
@@ -28,5 +31,7 @@ namespace ThreeD {
         void CastFromArray(const float* array, int size);
 
         void loadShader(const char* vertexShader, const char* fragmentShader);
+
+        Mesh();
     };
 }

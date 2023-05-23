@@ -3,6 +3,7 @@
 #include <cmath>
 #include "Quaternion.hpp"
 #include "Matrix.hpp"
+#include "Vector3.hpp"
 
 namespace Math{
 
@@ -52,8 +53,8 @@ namespace Math{
     Quaternion Quaternion::operator*=(const Quaternion& q){
         this->s = this->s * q.s - this->i * q.i - this->j * q.j - this->k * q.k;
         this->i = this->s * q.i + this->i * q.s + this->j * q.k - this->k * q.j;
-        this->j = this->s * q.j + this->j * q.s + this->k * q.i - this->i * q.k;
-        this->k = this->s * q.k + this->k * q.s + this->i * q.j - this->j * q.i;
+        this->j = this->s * q.j - this->j * q.s + this->k * q.i + this->i * q.k;
+        this->k = this->s * q.k + this->k * q.s - this->i * q.j + this->j * q.i;
         return *this;
     }
 
@@ -143,5 +144,25 @@ namespace Math{
 
     [[maybe_unused]] double Quaternion::DotProduct(const Quaternion& q) const {
         return this->i*q.i + this->j*q.j + this->k*q.k + this->s*q.s;
+    }
+
+    Quaternion Quaternion::Euler(const Math::Vector3& euler) {
+        return Quaternion::Euler(euler.x, euler.y, euler.z);
+    }
+
+    Quaternion Quaternion::Euler(float x, float y, float z) {
+        float c1 = cos(x / 2);
+        float c2 = cos(y / 2);
+        float c3 = cos(z / 2);
+        float s1 = sin(x / 2);
+        float s2 = sin(y / 2);
+        float s3 = sin(z / 2);
+
+        return Quaternion(
+                c1 * c2 * c3 - s1 * s2 * s3,
+                s1 * c2 * c3 + c1 * s2 * s3,
+                c1 * s2 * c3 + s1 * c2 * s3,
+                c1 * c2 * s3 - s1 * s2 * c3
+        );
     }
 }

@@ -3,6 +3,7 @@
 #include <ostream>
 #include <cmath>
 #include "Matrix.hpp"
+#include "Vector3.hpp"
 
 namespace Math{
     class Matrix4_4;
@@ -60,6 +61,9 @@ namespace Math{
         [[maybe_unused]] [[nodiscard]] Quaternion Normalized() const;
 
         [[maybe_unused]] [[nodiscard]] double DotProduct(const Quaternion& q) const;
+
+        static Quaternion Euler(const Math::Vector3& euler);
+        static Quaternion Euler(float x, float y, float z);
     };
 
 }

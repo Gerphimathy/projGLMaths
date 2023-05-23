@@ -31,8 +31,8 @@ namespace Math{
             std::array<double , 4> getLine(int i) const;
             void setLine(std::array<double , 4> line, int i);
 
-            std::array<double, 4> getRow(int j) const;
-            void setRow(std::array<double, 4> row, int j);
+            std::array<double, 4> getColumn(int j) const;
+            void setColumn(std::array<double, 4> row, int j);
 
             //Value Setters/Getters
             void set(double value, int i, int j);
@@ -61,5 +61,6 @@ namespace Math{
             Quaternion ToQuaternion() const;
 
             //Functions
+        std::array<float, 16> ToArray() const;
     };
 }

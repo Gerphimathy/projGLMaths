@@ -63,14 +63,14 @@ namespace Math{
         matrix[i] = line;
     }
 
-    std::array<double, 4> Matrix4_4::getRow(int j) const {
+    std::array<double, 4> Matrix4_4::getColumn(int j) const {
         auto row = std::array<double, 4>();
         for(int i = 0; i < 4; i++){
             row[i] = matrix[i][j];
         }
         return row;
     }
-    void Matrix4_4::setRow(std::array<double, 4> row, int j) {
+    void Matrix4_4::setColumn(std::array<double, 4> row, int j) {
         for(int i = 0; i < 4; i++){
             matrix[i][j] = row[i];
         }
@@ -208,6 +208,16 @@ namespace Math{
         double j = (get(0, 2) - get(2, 0)) / (4 * s);
         double k = (get(1, 0) - get(0, 1)) / (4 * s);
         return {s, i, j, k};
+    }
+
+    std::array<float, 16> Matrix4_4::ToArray() const {
+        std::array<float, 16> temp;
+        for(int i = 0; i < 4; ++i){
+            for(int j = 0; j < 4; ++j){
+                temp[4*i+j] = (float)get(j,i);
+            }
+        }
+        return temp;
     }
 
     /**

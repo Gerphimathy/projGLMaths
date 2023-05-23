@@ -1,6 +1,6 @@
 #version 330 core
 
-varying vec4 v_color;
+in vec4 v_color;
 
 uniform float u_time;
 

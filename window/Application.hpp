@@ -5,6 +5,7 @@
 #include "../shaders/GLShader.hpp"
 #include "../ThreeD/Vertex.hpp"
 #include "../math/Matrix.hpp"
+#include "../ThreeD/Camera.h"
 
 namespace Window {
     struct Application
@@ -30,6 +31,7 @@ namespace Window {
             light.specular = Math::Vector3(1.0f, 1.0f, 1.0f);
             light.color = Math::Vector3(1.0f, 1.0f, 1.0f);
 
+
             return true;
         }
 
@@ -40,7 +42,7 @@ namespace Window {
             }
         }
 
-        void render(GLFWwindow* window, ThreeD::Mesh* meshes, uint32_t meshCount) {
+        void render(GLFWwindow* window, ThreeD::Mesh* meshes, uint32_t meshCount, Camera& camera) {
             int width, height;
             GLenum err;
             glfwGetWindowSize(window, &width, &height);
@@ -49,7 +51,7 @@ namespace Window {
             glEnable(GL_DEPTH_TEST);
 
             glViewport(0, 0, width, height);
-            glClearColor(0.0f, 0.0f, 0.0f, 1.f);
+            glClearColor(0.4f, 0.4f, 0.65f, 1.f);
 
             const int stride = sizeof(ThreeD::Vertex);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -61,7 +63,15 @@ namespace Window {
                 const auto program = meshes[i].shader->GetProgram();
                 glUseProgram(program);
 
-                //CAMERA
+                //TIME
+                const auto TIME = glGetUniformLocation(program,"u_time");
+                glUniform1f(TIME, time);
+
+                while ((err = glGetError()) != GL_NO_ERROR) {
+                    std::cerr << "OpenGL error on time: " << err << std::endl;
+                }
+
+                //TRANSFORM
                 // une matrice OpenGL est definie en COLONNE
                 float rotationMatrix[16] = {
                         cosf(time), 0.f, -sinf(time), 0.0f,
@@ -71,7 +81,23 @@ namespace Window {
                 };
 
                 const auto ROT_MAT = glGetUniformLocation(program, "u_rotationMatrix");
-                glUniformMatrix4fv(ROT_MAT, 1, GL_FALSE, rotationMatrix);
+                glUniform4f(ROT_MAT, meshes[i].rotation.getS(), meshes[i].rotation.getI(), meshes[i].rotation.getJ(), meshes[i].rotation.getK());
+
+
+                const auto MESH_POS = glGetUniformLocation(program, "u_meshPosition");
+                glUniform3f(MESH_POS, meshes[i].position.getX(), meshes[i].position.getY(), meshes[i].position.getZ());
+
+                const auto MESH_SCAL = glGetUniformLocation(program, "u_scale");
+                glUniform3f(MESH_SCAL, meshes[i].scale.getX(), meshes[i].scale.getY(), meshes[i].scale.getZ());
+
+                while ((err = glGetError()) != GL_NO_ERROR) {
+                    std::cerr << "OpenGL error on transform: " << err << std::endl;
+                }
+
+
+
+
+                //CAMERA
 
                 const float aspectRatio = float(width)/float(height);
                 const float zNear = 0.1f, zFar = 100.0f;
@@ -87,8 +113,12 @@ namespace Window {
                 const auto PROJ_MAT = glGetUniformLocation(program, "u_projectionMatrix");
                 glUniformMatrix4fv(PROJ_MAT, 1, GL_FALSE, projectionMatrix);
 
-                const auto TIME = glGetUniformLocation(program,"u_time");
-                glUniform1f(TIME, time);
+
+                const auto CAM_TRANS = glGetUniformLocation(program, "camPos");
+                glUniform3f(CAM_TRANS, camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
+
+                const auto CAM_ROT = glGetUniformLocation(program, "camRot");
+                glUniform4f(CAM_ROT, camera.getRotation().getS(), camera.getRotation().getI(), camera.getRotation().getJ(), camera.getRotation().getK());
 
                 while ((err = glGetError()) != GL_NO_ERROR) {
                     std::cerr << "OpenGL error on camera: " << err << std::endl;
@@ -110,16 +140,21 @@ namespace Window {
 
                 //VERTEX
                 const auto POSITION = glGetAttribLocation(program,"a_position");
-                glVertexAttribPointer(POSITION, 3, GL_DOUBLE, GL_FALSE, stride, &meshes[i].vertices->position);
                 glEnableVertexAttribArray(POSITION);
-
-                const auto COLOR = glGetAttribLocation(program,"a_color");
-                glVertexAttribPointer(COLOR, 3, GL_DOUBLE, GL_FALSE, stride, &meshes[i].vertices->normal);
-                glEnableVertexAttribArray(COLOR);
+                glVertexAttribPointer(POSITION, 3, GL_DOUBLE, GL_FALSE, stride, &meshes[i].vertices->position);
 
                 while ((err = glGetError()) != GL_NO_ERROR) {
-                    std::cerr << "OpenGL error on vertex: " << err << std::endl;
+                    std::cerr << "OpenGL error on vertex position: " << err << std::endl;
                 }
+
+                const auto COLOR = glGetAttribLocation(program,"a_color");
+                glEnableVertexAttribArray(COLOR);
+                glVertexAttribPointer(COLOR, 3, GL_DOUBLE, GL_FALSE, stride, &meshes[i].vertices->normal);
+
+                while ((err = glGetError()) != GL_NO_ERROR) {
+                    std::cerr << "OpenGL error on vertex color: " << err << std::endl;
+                }
+
 
                 //LIGHT
                 auto* lightPosition = new GLfloat[3] {(float) light.position.x, (float) light.position.y, (float) light.position.z};
