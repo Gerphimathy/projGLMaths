@@ -51,7 +51,8 @@ void loadObjMesh(ThreeD::Mesh* output , const char* inputFile, const char* mater
     bool ret = tinyobj::LoadObj(&attrib, &shapes, &objmaterials,
                                 &warn, &err,
                                 inputFile, //model to load
-                                materials_directory //directory to search for materials
+                                materials_directory, //directory to search for materials
+                        true
                                  );
 
     if (!err.empty()) { // `err` may contain warning message.

@@ -50,10 +50,10 @@ int main(void) {
 
     auto* basicShader = new GLShader();
     basicShader->LoadVertexShader(
-            "./shaders/basic/basic.vs.glsl"
+            "../shaders/basic/basic.vs.glsl"
     );
     basicShader->LoadFragmentShader(
-            "./shaders/basic/basic.fs.glsl"
+            "../shaders/basic/basic.fs.glsl"
     );
     basicShader->Create();
 
@@ -77,34 +77,34 @@ int main(void) {
     meshes[0] = *mesh;
 
     auto* mesh2 = new ThreeD::Mesh();
-    loadObjMesh(mesh2, "./TestObjects/cube.obj", "./TestObjects/materials/");
+    loadObjMesh(mesh2, "../TestObjects/cube.obj", "../TestObjects/materials/");
     mesh2->shader = basicShader;
     mesh2->name = "Cube";
 
-    meshes[2] = *mesh2;
+    meshes[1] = *mesh2;
 
     auto* mesh3 = new ThreeD::Mesh();
-    loadObjMesh(mesh3, "./TestObjects/ube_wood.obj", "./TestObjects/materials/");
+    loadObjMesh(mesh3, "../TestObjects/ube_wood.obj", "../TestObjects/materials/");
     mesh3->shader = basicShader;
     mesh3->name = "Cube Wood";
     mesh3->position = {0,0,-20};
 
-    meshes[1] = *mesh3;
+    meshes[2] = *mesh3;
 
     Camera camera = Camera();
 
 
     while (!glfwWindowShouldClose(window))
     {
-        //camera.rotation *= Math::Quaternion::Euler({0.1,0,0});
-        std::cout << camera.rotation.ToMatrix() << std::endl;
+        camera.rotation *= Math::Quaternion::Euler({0.1,0,0});
+        //std::cout << camera.rotation.ToMatrix() << std::endl;
         app.render(window, meshes, 2, camera);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
-    app.deinitialize(meshes, 3);
+    app.deinitialize(meshes, 2);
 
     glfwTerminate();
     return 0;

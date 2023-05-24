@@ -1,20 +1,12 @@
-cmake_minimum_required(VERSION 3.24)
+cmake_minimum_required(VERSION 3.25)
 project(math)
 set(CMAKE_CXX_STANDARD 17)
 
 find_package(OpenGL REQUIRED)
-link_directories(${OPENGL_gl_LIBRARY})
+find_package(GLFW3 REQUIRED)
+find_package(GLEW REQUIRED)
 
-include_directories(../libs/glfw/include)
-include_directories(../libs/glew/include)
-
-link_directories(../libs/glfw/lib-mingw-w64)
-link_directories(../libs/glew/lib/Release/x64)
-
-
-
-add_executable(
-        math
+add_executable(math
         main.cpp
 
         math/Matrix.cpp
@@ -31,6 +23,8 @@ add_executable(
         ThreeD/Material.hpp
         ThreeD/Texture.hpp
         ThreeD/Mesh.cpp
+        ThreeD/Camera.h
+        ThreeD/Camera.cpp
 
         window/Application.hpp
 
@@ -38,10 +32,8 @@ add_executable(
         shaders/GLShader.hpp
 
         loader/loadMesh.h
-        loader/stb_image.h
-
-        ThreeD/Camera.cpp ThreeD/Camera.h)
+        loader/stb_image.h)
 
 
-target_link_libraries(math glfw3 ${OPENGL_gl_LIBRARY} glew32)
-#target_include_directories(math loader math shaders TestObjects ThreeD window glfw3 ${OPENGL_gl_LIBRARY} glew32)
+target_link_libraries(math ${OPENGL_LIBRARIES} glfw3 glew32)
+target_include_directories(math PUBLIC ${OPENGL_INCLUDE_DIRS} glfw3 glew32)

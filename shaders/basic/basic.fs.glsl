@@ -57,6 +57,6 @@ void main(void)
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0), u_material.shininess);
 	vec3 specular = u_light.color * (spec * u_material.specular);
 
-	vec3 result = ambient + diffuse + specular + texture(u_texture, a_texCoord).rgb;
+	vec3 result = ambient + diffuse + specular + texture(u_texture, a_texCoord);
 	gl_FragColor = vec4(result, 1.0);
 }

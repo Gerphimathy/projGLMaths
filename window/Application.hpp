@@ -42,9 +42,16 @@ namespace Window {
             }
         }
 
+        void GLReportError(std::string value){
+            GLenum err;
+
+            while ((err = glGetError()) != GL_NO_ERROR) {
+                std::cerr << "OpenGL error on " << value << ": " << err << std::endl;
+            }
+        }
+
         void render(GLFWwindow* window, ThreeD::Mesh* meshes, uint32_t meshCount, Camera& camera) {
             int width, height;
-            GLenum err;
             glfwGetWindowSize(window, &width, &height);
 
             glEnable(GL_CULL_FACE);
@@ -66,10 +73,8 @@ namespace Window {
                 //TIME
                 const auto TIME = glGetUniformLocation(program,"u_time");
                 glUniform1f(TIME, time);
+                GLReportError("Time");
 
-                while ((err = glGetError()) != GL_NO_ERROR) {
-                    std::cerr << "OpenGL error on time: " << err << std::endl;
-                }
 
                 //TRANSFORM
                 // une matrice OpenGL est definie en COLONNE
@@ -82,19 +87,15 @@ namespace Window {
 
                 const auto ROT_MAT = glGetUniformLocation(program, "u_rotationMatrix");
                 glUniform4f(ROT_MAT, meshes[i].rotation.getS(), meshes[i].rotation.getI(), meshes[i].rotation.getJ(), meshes[i].rotation.getK());
-
+                GLReportError("Rotation Matrix");
 
                 const auto MESH_POS = glGetUniformLocation(program, "u_meshPosition");
                 glUniform3f(MESH_POS, meshes[i].position.getX(), meshes[i].position.getY(), meshes[i].position.getZ());
+                GLReportError("Mesh Position");
 
                 const auto MESH_SCAL = glGetUniformLocation(program, "u_scale");
                 glUniform3f(MESH_SCAL, meshes[i].scale.getX(), meshes[i].scale.getY(), meshes[i].scale.getZ());
-
-                while ((err = glGetError()) != GL_NO_ERROR) {
-                    std::cerr << "OpenGL error on transform: " << err << std::endl;
-                }
-
-
+                GLReportError("Mesh Scale");
 
 
                 //CAMERA
@@ -112,100 +113,92 @@ namespace Window {
 
                 const auto PROJ_MAT = glGetUniformLocation(program, "u_projectionMatrix");
                 glUniformMatrix4fv(PROJ_MAT, 1, GL_FALSE, projectionMatrix);
+                GLReportError("Projection Matrix");
 
 
                 const auto CAM_TRANS = glGetUniformLocation(program, "camPos");
                 glUniform3f(CAM_TRANS, camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
+                GLReportError("Camera Position");
 
                 const auto CAM_ROT = glGetUniformLocation(program, "camRot");
                 glUniform4f(CAM_ROT, camera.getRotation().getS(), camera.getRotation().getI(), camera.getRotation().getJ(), camera.getRotation().getK());
-
-                while ((err = glGetError()) != GL_NO_ERROR) {
-                    std::cerr << "OpenGL error on camera: " << err << std::endl;
-                }
+                GLReportError("Camera Rotation");
 
                 //Texture
                 const auto TEX_COORD = glGetAttribLocation(program,"a_texCoord");
+                glEnableVertexAttribArray(TEX_COORD);
                 glVertexAttribPointer(TEX_COORD, 2, GL_DOUBLE, GL_FALSE, stride, &meshes[i].vertices->texcoords);
+                GLReportError("Texture Coordinates");
 
                 if(meshes[i].material.texture != nullptr){
                     glBindTexture(GL_TEXTURE_2D, meshes[i].material.texture->id);
+                    GLReportError("Texture");
                     //TODO:
                     //glBindVertexArray(VAO);
-                }
-
-                while ((err = glGetError()) != GL_NO_ERROR) {
-                    std::cerr << "OpenGL error on texture: " << err << std::endl;
                 }
 
                 //VERTEX
                 const auto POSITION = glGetAttribLocation(program,"a_position");
                 glEnableVertexAttribArray(POSITION);
                 glVertexAttribPointer(POSITION, 3, GL_DOUBLE, GL_FALSE, stride, &meshes[i].vertices->position);
-
-                while ((err = glGetError()) != GL_NO_ERROR) {
-                    std::cerr << "OpenGL error on vertex position: " << err << std::endl;
-                }
+                GLReportError("Vertex Position");
 
                 const auto COLOR = glGetAttribLocation(program,"a_color");
                 glEnableVertexAttribArray(COLOR);
                 glVertexAttribPointer(COLOR, 3, GL_DOUBLE, GL_FALSE, stride, &meshes[i].vertices->normal);
-
-                while ((err = glGetError()) != GL_NO_ERROR) {
-                    std::cerr << "OpenGL error on vertex color: " << err << std::endl;
-                }
+                GLReportError("Vertex Color");
 
 
                 //LIGHT
                 auto* lightPosition = new GLfloat[3] {(float) light.position.x, (float) light.position.y, (float) light.position.z};
                 const auto LIGHT_POSITION = glGetUniformLocation(program,"u_light.position");
                 glUniform3fv(LIGHT_POSITION, 1, lightPosition);
+                GLReportError("Light Position");
 
                 auto* lightAmbient = new GLfloat[3] {(float) light.ambient.x, (float) light.ambient.y, (float) light.ambient.z};
                 const auto LIGHT_AMBIENT = glGetUniformLocation(program,"u_light.ambient");
                 glUniform3fv(LIGHT_AMBIENT, 1, lightAmbient);
+                GLReportError("Light Ambient");
 
                 auto* lightDiffuse = new GLfloat[3] {(float) light.diffuse.x, (float) light.diffuse.y, (float) light.diffuse.z};
                 const auto LIGHT_DIFFUSE = glGetUniformLocation(program,"u_light.diffuse");
                 glUniform3fv(LIGHT_DIFFUSE, 1, lightDiffuse);
+                GLReportError("Light Diffuse");
 
                 auto * lightSpecular = new GLfloat[3] {(float) light.specular.x, (float) light.specular.y, (float) light.specular.z};
                 const auto LIGHT_SPECULAR = glGetUniformLocation(program,"u_light.specular");
                 glUniform3fv(LIGHT_SPECULAR, 1, lightSpecular);
+                GLReportError("Light Specular");
 
                 auto * lightColor = new GLfloat[3] {(float) light.color.x, (float) light.color.y, (float) light.color.z};
                 const auto LIGHT_COLOR = glGetUniformLocation(program,"u_light.color");
                 glUniform3fv(LIGHT_COLOR, 1, lightColor);
-
-                while ((err = glGetError()) != GL_NO_ERROR) {
-                    std::cerr << "OpenGL error on light: " << err << std::endl;
-                }
+                GLReportError("Light Color");
 
                 //MATERIAL
                 auto* materialAmbient = new GLfloat[3] {(float) meshes[i].material.ambient.x, (float) meshes[i].material.ambient.y, (float) meshes[i].material.ambient.z};
                 const auto MATERIAL_AMBIENT = glGetUniformLocation(program,"u_material.ambient");
                 glUniform3fv(MATERIAL_AMBIENT, 1, materialAmbient);
+                GLReportError("Material Ambient");
 
                 auto* materialDiffuse = new GLfloat[3] {(float) meshes[i].material.diffuse.x, (float) meshes[i].material.diffuse.y, (float) meshes[i].material.diffuse.z};
                 const auto MATERIAL_DIFFUSE = glGetUniformLocation(program,"u_material.diffuse");
                 glUniform3fv(MATERIAL_DIFFUSE, 1, materialDiffuse);
+                GLReportError("Material Diffuse");
 
                 auto* materialSpecular = new GLfloat[3] {(float) meshes[i].material.specular.x, (float) meshes[i].material.specular.y, (float) meshes[i].material.specular.z};
                 const auto MATERIAL_SPECULAR = glGetUniformLocation(program,"u_material.specular");
                 glUniform3fv(MATERIAL_SPECULAR, 1, materialSpecular);
+                GLReportError("Material Specular");
 
                 const auto MATERIAL_SHININESS = glGetUniformLocation(program,"u_material.shininess");
                 glUniform1f(MATERIAL_SHININESS, meshes[i].material.shininess);
-
-                while ((err = glGetError()) != GL_NO_ERROR) {
-                    std::cerr << "OpenGL error on mat: " << err << std::endl;
-                }
+                GLReportError("Material Shininess");
 
                 //DRAW
                 glDrawElements(GL_TRIANGLES, meshes[i].indicesCount, GL_UNSIGNED_SHORT, meshes[i].indices);
-                while ((err = glGetError()) != GL_NO_ERROR) {
-                    std::cerr << "OpenGL error on draw: " << err << std::endl;
-                }
+                GLReportError("Draw");
+
                 std::cerr << "Mesh Drawn" << std::endl << std::endl;
             }
         }
