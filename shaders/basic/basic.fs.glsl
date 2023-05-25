@@ -25,13 +25,9 @@ struct Light
 uniform Light u_light;
 
 varying vec3 f_normal;
-
-uniform mat4 u_rotationMatrix;
-uniform mat4 u_projectionMatrix;
-
 in vec3 FragPos;
+in vec2 f_texCoords;
 
-in vec2 a_texCoord;
 uniform sampler2D u_texture;
 
 void main(void)
@@ -57,6 +53,6 @@ void main(void)
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0), u_material.shininess);
 	vec3 specular = u_light.color * (spec * u_material.specular);
 
-	vec3 result = ambient + diffuse + specular + texture(u_texture, a_texCoord);
-	gl_FragColor = vec4(result, 1.0);
+	vec3 result = ambient + diffuse + specular;
+	gl_FragColor = vec4(result, 1.0) + texture(u_texture, f_texCoords);
 }

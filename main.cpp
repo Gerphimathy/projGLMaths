@@ -57,6 +57,8 @@ int main(void) {
     );
     basicShader->Create();
 
+    //return 0;
+
     /**
       IMPORTANT: Models MUST be smooth shaded
      * **/
