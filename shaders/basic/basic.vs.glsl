@@ -1,8 +1,11 @@
 #version 330 core
 
 in vec3 a_position;
-in vec3 a_color;
+in vec3 a_normal;
 in vec2 a_texCoord;
+
+uniform float u_usetexture;
+out float f_usetexture;
 
 out vec4 v_color;
 
@@ -38,11 +41,12 @@ vec3 rotate(vec4 rotation, vec3 position) {
 
 void main(void)
 {
+	f_usetexture = u_usetexture;
+
 	//Output to fragment shader
 	f_texCoords = a_texCoord;
-	v_color = vec4(a_color, 1.0);
 	FragPos = a_position;
-	f_normal = a_color;
+	f_normal = a_normal;
 
 	//Calculate position
 	vec3 machin = vec3(

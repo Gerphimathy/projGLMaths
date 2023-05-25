@@ -1,7 +1,5 @@
 #version 330 core
 
-in vec4 v_color;
-
 uniform float u_time;
 
 struct Material
@@ -29,6 +27,7 @@ in vec3 FragPos;
 in vec2 f_texCoords;
 
 uniform sampler2D u_texture;
+in float f_usetexture;
 
 void main(void)
 {
@@ -54,5 +53,9 @@ void main(void)
 	vec3 specular = u_light.color * (spec * u_material.specular);
 
 	vec3 result = ambient + diffuse + specular;
-	gl_FragColor = vec4(result, 1.0) + texture(u_texture, f_texCoords);
+	if(f_usetexture > 0.5)
+	{
+		result += texture(u_texture, f_texCoords).rgb;
+	}
+	gl_FragColor = vec4(result, 1.0);
 }

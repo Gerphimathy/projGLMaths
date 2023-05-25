@@ -50,7 +50,7 @@ namespace Window {
             }
         }
 
-        void render(GLFWwindow* window, ThreeD::Mesh* meshes, uint32_t meshCount, Camera& camera) {
+        void render(GLFWwindow* window, ThreeD::Mesh* meshes, uint32_t meshCount, Camera& camera, bool verbose = false) {
             int width, height;
             glfwGetWindowSize(window, &width, &height);
 
@@ -64,7 +64,7 @@ namespace Window {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             for (int i = 0; i < meshCount; ++i) {
-                std::cerr << "Mesh " << i << ": " << meshes[i].name << std::endl;
+                if(verbose) std::cerr << "Mesh " << i << ": " << meshes[i].name << std::endl;
                 float time = glfwGetTime();
 
                 const auto program = meshes[i].shader->GetProgram();
@@ -130,6 +130,11 @@ namespace Window {
                 glVertexAttribPointer(TEX_COORD, 2, GL_DOUBLE, GL_FALSE, stride, &meshes[i].vertices->texcoords);
                 GLReportError("Texture Coordinates");
 
+                float texFlag = (meshes[i].material.texture != nullptr) ? 1.0f : 0.0f;
+                const auto USE_TEXTURE = glGetUniformLocation(program, "u_usetexture");
+                glUniform1f(USE_TEXTURE, texFlag);
+                GLReportError("Use Texture");
+
                 if(meshes[i].material.texture != nullptr){
                     glBindTexture(GL_TEXTURE_2D, meshes[i].material.texture->id);
                     GLReportError("Texture");
@@ -143,10 +148,10 @@ namespace Window {
                 glVertexAttribPointer(POSITION, 3, GL_DOUBLE, GL_FALSE, stride, &meshes[i].vertices->position);
                 GLReportError("Vertex Position");
 
-                const auto COLOR = glGetAttribLocation(program,"a_color");
-                glEnableVertexAttribArray(COLOR);
-                glVertexAttribPointer(COLOR, 3, GL_DOUBLE, GL_FALSE, stride, &meshes[i].vertices->normal);
-                GLReportError("Vertex Color");
+                const auto NORMAL = glGetAttribLocation(program,"a_normal");
+                glEnableVertexAttribArray(NORMAL);
+                glVertexAttribPointer(NORMAL, 3, GL_DOUBLE, GL_FALSE, stride, &meshes[i].vertices->normal);
+                GLReportError("Vertex Normal");
 
 
                 //LIGHT
@@ -199,7 +204,7 @@ namespace Window {
                 glDrawElements(GL_TRIANGLES, meshes[i].indicesCount, GL_UNSIGNED_SHORT, meshes[i].indices);
                 GLReportError("Draw");
 
-                std::cerr << "Mesh Drawn" << std::endl << std::endl;
+                if(verbose) std::cerr << "Mesh Drawn" << std::endl << std::endl;
             }
         }
     };
