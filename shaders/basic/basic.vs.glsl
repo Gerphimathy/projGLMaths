@@ -45,7 +45,7 @@ void main(void)
 
 	//Output to fragment shader
 	f_texCoords = a_texCoord;
-	FragPos = a_position;
+	FragPos = a_position + u_meshPosition;
 	f_normal = a_normal;
 
 	//Calculate position

@@ -25,9 +25,9 @@ namespace Window {
 
             GLenum error = glewInit();
 
-            light.position = Math::Vector3(0.0f, 0.9f, 0.0f);
-            light.ambient = Math::Vector3(0.5f, 0.5f, 0.5f);
-            light.diffuse = Math::Vector3(0.5f, 0.5f, 0.5f);
+            light.position = Math::Vector3(0.0f, 20.0f, -20.0f);
+            light.ambient = Math::Vector3(1.0f, 1.0f, 1.0f);
+            light.diffuse = Math::Vector3(1.0f, 1.0f, 1.0f);
             light.specular = Math::Vector3(1.0f, 1.0f, 1.0f);
             light.color = Math::Vector3(1.0f, 1.0f, 1.0f);
 
@@ -136,10 +136,13 @@ namespace Window {
                 GLReportError("Use Texture");
 
                 if(meshes[i].material.texture != nullptr){
+                    glActiveTexture(GL_TEXTURE0);
                     glBindTexture(GL_TEXTURE_2D, meshes[i].material.texture->id);
+
+                    const auto TEXTURE = glGetUniformLocation(program, "u_texture");
+                    glUniform1i(TEXTURE, 1);
+
                     GLReportError("Texture");
-                    //TODO:
-                    //glBindVertexArray(VAO);
                 }
 
                 //VERTEX

@@ -70,15 +70,17 @@ void loadObjMesh(ThreeD::Mesh* output , const char* inputFile, const char* mater
     output->vertexCount = attrib.vertices.size()/3;
     output->vertices = new ThreeD::Vertex[output->vertexCount];
 
-    //Print the length of positions, normals and texcoords
     for (int i = 0; i < output->vertexCount; ++i) {
-        output->vertices[i].position = positions.front();
+        Math::Vector3 position = positions.front();
+        output->vertices[i].position = {position.x, position.y, position.z};
         positions.pop_front();
 
-        output->vertices[i].normal = normals.front();
+        Math::Vector3 normal = normals.front();
+        output->vertices[i].normal = {normal.x, normal.y, normal.z};
         normals.pop_front();
 
-        output->vertices[i].texcoords = texcoords.front();
+        Math::Vector2 texcoord = texcoords.front();
+        output->vertices[i].texcoords = {texcoord.x, texcoord.y};
         texcoords.pop_front();
     }
 
@@ -104,24 +106,27 @@ void loadObjMesh(ThreeD::Mesh* output , const char* inputFile, const char* mater
                                                        &output->material.texture->width,
                                                        &output->material.texture->height,
                                                        &output->material.texture->channels,
-                                                       0);
-            unsigned int textureId;
-            glGenTextures(1, &textureId);
-            glBindTexture(GL_TEXTURE_2D, textureId);
-            // set the texture wrapping/filtering options (on the currently bound texture object)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                                                       STBI_rgb_alpha);
 
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
-                         output->material.texture->width, output->material.texture->height,
-                         0, GL_RGB, GL_UNSIGNED_BYTE,
-                         data);
-            glGenerateMipmap(GL_TEXTURE_2D);
-            stbi_image_free(data);
+            if (data){
+                unsigned int textureId;
+                glGenTextures(1, &textureId);
+                glBindTexture(GL_TEXTURE_2D, textureId);
 
-            std::cout << "Texture loaded: " << output->material.texture->path << std::endl;
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8,
+                             output->material.texture->width, output->material.texture->height,
+                             0, GL_RGBA, GL_UNSIGNED_BYTE,
+                             data);
+
+                //glGenerateMipmap(GL_TEXTURE_2D);
+
+                stbi_image_free(data);
+
+                std::cout << "Texture loaded: " << output->material.texture->path << std::endl;
+            }else std::cout << "Failed to load texture: " << output->material.texture->path << std::endl;
         }
     }
 
