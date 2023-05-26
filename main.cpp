@@ -82,7 +82,7 @@ int main(void) {
     mesh2->position = {4,0,-10};
 
     auto* mesh3 = new ThreeD::Mesh();
-    loadObjMesh(mesh3, "../TestObjects/ube_wood.obj", "../TestObjects/materials/");
+    loadObjMesh(mesh3, "../TestObjects/cube_wood.obj", "../TestObjects/materials/");
     mesh3->shader = basicShader;
     mesh3->name = "Cube Wood";
     mesh3->position = {-4,0,-10};
