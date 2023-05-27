@@ -98,7 +98,7 @@ void loadObjMesh(ThreeD::Mesh* output , const char* inputFile, const char* mater
         output->material.shininess = mat->shininess;
 
         if(!mat->diffuse_texname.empty()){
-            std::cout << "Loading texture: " << std::endl;
+            std::cout << "Loading texture..." << std::endl;
             output->material.texture = new ThreeD::Texture();
             output->material.texture->path = std::string(materials_directory) + mat->diffuse_texname;
 
@@ -113,15 +113,19 @@ void loadObjMesh(ThreeD::Mesh* output , const char* inputFile, const char* mater
                 glGenTextures(1, &textureId);
                 glBindTexture(GL_TEXTURE_2D, textureId);
 
+                output->material.texture->id = textureId;
+
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
                 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8,
                              output->material.texture->width, output->material.texture->height,
                              0, GL_RGBA, GL_UNSIGNED_BYTE,
                              data);
 
-                //glGenerateMipmap(GL_TEXTURE_2D);
+                glGenerateMipmap(GL_TEXTURE_2D);
 
                 stbi_image_free(data);
 

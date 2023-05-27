@@ -39,6 +39,9 @@ namespace Window {
         {
             for (int i = 0; i < meshCount; ++i) {
                 meshes[i].shader->Destroy();
+                if (meshes[i].material.texture) {
+                    glDeleteTextures(1, &meshes[i].material.texture->id);
+                }
             }
         }
 
@@ -140,7 +143,7 @@ namespace Window {
                     glBindTexture(GL_TEXTURE_2D, meshes[i].material.texture->id);
 
                     const auto TEXTURE = glGetUniformLocation(program, "u_texture");
-                    glUniform1i(TEXTURE, 1);
+                    glUniform1i(TEXTURE, 0);
 
                     GLReportError("Texture");
                 }
