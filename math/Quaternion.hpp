@@ -43,10 +43,14 @@ namespace Math{
         Quaternion operator*(const Quaternion& q) const;
 
         Quaternion operator*=(const double& d);
+        Quaternion operator*=(const float &d);
         Quaternion operator*(const double& d) const;
+        Quaternion operator*(const float& d) const;
 
         Quaternion operator^=(const Quaternion &q);
         Quaternion operator^(const Quaternion &q) const;
+
+        Vector3 operator*(const Vector3& v) const;
 
         friend std::ostream& operator<<(std::ostream& os, const Quaternion& q);
 

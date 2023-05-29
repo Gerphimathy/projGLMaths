@@ -21,7 +21,7 @@ namespace Math{
         for(int i = 0; i < 4; i++){
             matrix[i] = std::array<double, 4>();
             for(int j = 0; j < 4; j++){
-                matrix[i][j] = 0;
+                matrix[i][j] = i == j ? 1 : 0;
             }
         }
     }
@@ -33,6 +33,8 @@ namespace Math{
     Matrix4_4::Matrix4_4(Matrix4_4 const &matrix) {
         this->matrix = matrix.getMatrix();
     }
+
+
 
     /**
      * |                                |
@@ -167,6 +169,11 @@ namespace Math{
         return *this;
     }
 
+    Matrix4_4& Matrix4_4::operator=(const std::array<float, 16> tab) {
+        matrix = Matrix4_4::FromArray(tab).getMatrix();
+        return *this;
+    }
+
     bool Matrix4_4::operator==(const Matrix4_4& m) const {
         std::array<std::array<double, 4>,4> other = m.getMatrix();
         //Compare values
@@ -220,9 +227,19 @@ namespace Math{
         return temp;
     }
 
+     Matrix4_4 Matrix4_4::FromArray(std::array<float, 16> tab) {
+        Matrix4_4 mat;
+        for(int i = 0; i < tab.size(); ++i){
+            mat.set(tab[i], i%4, i/4);
+        }
+        return mat;
+    };
+
     /**
      * |                          |
      * |        Functions         |
      * |                          |
      */
+
+
 }

@@ -35,6 +35,66 @@ namespace Math {
     double Vector3::Norm() {
         return std::sqrt(x*x + y*y + z*z);
     }
+
+    double Vector3::dotProduct(const Vector3& u, const Vector3& v) {
+        return u.x * v.x + u.y * v.y + u.z * v.z;
+    }
+
+    Vector3 Vector3::crossProduct(const Vector3& u, const Vector3& v) {
+        return{
+                u.y * v.z - u.z * v.y,
+                u.z * v.x - u.x * v.z,
+                u.x * v.y - u.y * v.x
+    };
+    }
+
+
+
+    bool Vector3::operator==(const Vector3 &rhs) const {
+        return x == rhs.x &&
+               y == rhs.y &&
+               z == rhs.z;
+    }
+
+    bool Vector3::operator!=(const Vector3 &rhs) const {
+        return !(rhs == *this);
+    }
+
+    Vector3 Vector3::operator+=(const Vector3 &rhs)  {
+        x += rhs.x;
+        y += rhs.y;
+        z += rhs.z;
+        return *this;
+    }
+    Vector3 Vector3::operator-=(const Vector3 &rhs)  {
+        *this += -rhs;
+        return *this;
+    }
+
+    Vector3 Vector3::operator-() const  {
+        return {-x, -y, -z};
+    }
+
+    Vector3 Vector3::operator*=(const double& i){
+        x *= i;
+        y *= i;
+        z *= i;
+        return *this;
+    }
+
+    Vector3 Vector3::operator*(const double& i) const{
+        Vector3 temp = *this;
+        temp *= i;
+        return temp;
+    }
+
+
+    Vector3 Vector3::operator+(const Vector3& v) const{
+        Vector3 temp = *this;
+        temp += v;
+        return temp;
+    }
+
 } // Math
 
 std::ostream& operator<<(std::ostream& os, const Math::Vector3& v){

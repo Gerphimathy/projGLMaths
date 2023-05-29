@@ -9,14 +9,13 @@
 #include "Material.hpp"
 #include "../shaders/GLShader.hpp"
 #include "../math/Quaternion.hpp"
+#include "ThreeDObject.h"
 
 namespace ThreeD {
-    struct Mesh{
+    struct Mesh : public virtual ThreeDObject{
         ThreeD::Vertex* vertices;
         uint32_t vertexCount;
 
-        Math::Vector3 position;
-        Math::Quaternion rotation;
         Math::Vector3 scale;
 
         uint16_t* indices;

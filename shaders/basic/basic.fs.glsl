@@ -25,6 +25,7 @@ uniform Light u_light;
 varying vec3 f_normal;
 in vec3 FragPos;
 in vec2 f_texCoords;
+in vec3 v_camPos;
 
 uniform sampler2D u_texture;
 in float f_usetexture;
@@ -32,8 +33,6 @@ in float f_usetexture;
 void main(void)
 {
 
-	//TODO: Give camera position
-	vec3 viewPos = vec3(0.0, 0.0, 0.0);
 
 	// ambient
 	vec3 ambient = u_light.color * u_material.ambient;
@@ -47,7 +46,7 @@ void main(void)
 	vec3 diffuse = u_light.color * (diff * u_material.diffuse);
 
 	// specular
-	vec3 viewDir = normalize(viewPos);
+	vec3 viewDir = normalize(v_camPos);
 	vec3 reflectDir = reflect(-lightDir, norm);
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0), u_material.shininess);
 	vec3 specular = u_light.color * (spec * u_material.specular);

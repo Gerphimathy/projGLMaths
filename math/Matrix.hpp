@@ -62,5 +62,9 @@ namespace Math{
 
             //Functions
         std::array<float, 16> ToArray() const;
+
+        static Matrix4_4 FromArray(std::array<float, 16>);
+
+        Matrix4_4& operator=(const std::array<float, 16>);
     };
 }

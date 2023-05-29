@@ -20,6 +20,7 @@ uniform vec4 camRot;
 out vec2 f_texCoords;
 out vec3 FragPos;
 out vec3 f_normal;
+out vec3 v_camPos;
 
 vec3 rotate(vec4 rotation, vec3 position) {
 	vec3 u = rotation.xyz;
@@ -46,7 +47,9 @@ void main(void)
 	//Output to fragment shader
 	f_texCoords = a_texCoord;
 	FragPos = a_position + u_meshPosition;
-	f_normal = a_normal;
+	f_normal = rotate(u_rotationMatrix, a_normal);
+	v_camPos = camPos;
+
 
 	//Calculate position
 	vec3 machin = vec3(
@@ -56,7 +59,10 @@ void main(void)
 	);
 	machin = rotate(u_rotationMatrix, machin);
 	machin += u_meshPosition;
+	FragPos = machin;
 	machin -= camPos;
 	machin = rotate(-camRot, machin);
 	gl_Position = u_projectionMatrix * vec4(machin, 1);
+
+
 }

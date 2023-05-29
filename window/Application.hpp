@@ -6,17 +6,12 @@
 #include "../ThreeD/Vertex.hpp"
 #include "../math/Matrix.hpp"
 #include "../ThreeD/Camera.h"
+#include "../ThreeD/Light.h"
 
 namespace Window {
     struct Application
     {
-        struct Light{
-            Math::Vector3 position;
-            Math::Vector3 ambient;
-            Math::Vector3 diffuse;
-            Math::Vector3 specular;
-            Math::Vector3 color;
-        } light;
+
 
         bool initialize()
         {
@@ -25,11 +20,8 @@ namespace Window {
 
             GLenum error = glewInit();
 
-            light.position = Math::Vector3(0.0f, 20.0f, -20.0f);
-            light.ambient = Math::Vector3(1.0f, 1.0f, 1.0f);
-            light.diffuse = Math::Vector3(1.0f, 1.0f, 1.0f);
-            light.specular = Math::Vector3(1.0f, 1.0f, 1.0f);
-            light.color = Math::Vector3(1.0f, 1.0f, 1.0f);
+
+
 
 
             return true;
@@ -53,7 +45,7 @@ namespace Window {
             }
         }
 
-        void render(GLFWwindow* window, ThreeD::Mesh* meshes, uint32_t meshCount, Camera& camera, bool verbose = false) {
+        void render(GLFWwindow* window, ThreeD::Mesh* meshes, uint32_t meshCount, ThreeD::Camera& camera, ThreeD::Light& light, bool verbose = false) {
             int width, height;
             glfwGetWindowSize(window, &width, &height);
 
@@ -81,15 +73,9 @@ namespace Window {
 
                 //TRANSFORM
                 // une matrice OpenGL est definie en COLONNE
-                float rotationMatrix[16] = {
-                        cosf(time), 0.f, -sinf(time), 0.0f,
-                        0.f, 1.f, 0.0f, 0.0f,
-                        sinf(time), 0.0f, cosf(time), 0.0f,
-                        0.0f, 0.0f, -20.0f, 1.0f
-                };
 
-                const auto ROT_MAT = glGetUniformLocation(program, "u_rotationMatrix");
-                glUniform4f(ROT_MAT, meshes[i].rotation.getS(), meshes[i].rotation.getI(), meshes[i].rotation.getJ(), meshes[i].rotation.getK());
+                const auto MESH_ROT = glGetUniformLocation(program, "u_rotationMatrix");
+                glUniform4f(MESH_ROT, meshes[i].rotation.getS(), meshes[i].rotation.getI(), meshes[i].rotation.getJ(), meshes[i].rotation.getK());
                 GLReportError("Rotation Matrix");
 
                 const auto MESH_POS = glGetUniformLocation(program, "u_meshPosition");
@@ -103,19 +89,10 @@ namespace Window {
 
                 //CAMERA
 
-                const float aspectRatio = float(width)/float(height);
-                const float zNear = 0.1f, zFar = 100.0f;
-                const float fovy = 45.f * M_PI/180.f;
-                const float cot = 1.f / tanf(fovy / 2.f);
-                float projectionMatrix[] = {
-                        cot/aspectRatio, 0.f, 0.f, 0.f, // 1ere colonne
-                        0.f, cot, 0.f, 0.f,
-                        0.f, 0.f, -zFar/(zFar-zNear), -1.f,
-                        0.f, 0.f, -zFar*zNear/(zFar-zNear), 0.f
-                };
+
 
                 const auto PROJ_MAT = glGetUniformLocation(program, "u_projectionMatrix");
-                glUniformMatrix4fv(PROJ_MAT, 1, GL_FALSE, projectionMatrix);
+                glUniformMatrix4fv(PROJ_MAT, 1, GL_FALSE, camera.projectionMatrix.ToArray().data());
                 GLReportError("Projection Matrix");
 
 

@@ -3,31 +3,24 @@
 //
 #include "../Math/Vector3.hpp"
 #include "../Math/Quaternion.hpp"
+#include "ThreeDObject.h"
 
 #ifndef MATH_CAMERA_H
 #define MATH_CAMERA_H
 
+namespace ThreeD {
+    class Camera : public virtual ThreeDObject {
 
-class Camera {
+    public:
 
-public:
-    Math::Vector3 position;
-    Math::Quaternion rotation;
+        Math::Matrix4_4 projectionMatrix;
 
-    Camera(const Math::Vector3 &position, const Math::Quaternion &rotation);
+        Camera(const Math::Vector3 &position, const Math::Quaternion &rotation);
 
-    Camera();
+        Camera();
+    };
 
-    const Math::Vector3 &getPosition() const;
-
-    void setPosition(const Math::Vector3 &position);
-
-    const Math::Quaternion &getRotation() const;
-
-    void setRotation(const Math::Quaternion &rotation);
-};
-
-
+}
 
 
 #endif //MATH_CAMERA_H

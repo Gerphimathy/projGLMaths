@@ -8,6 +8,7 @@
 #include <iostream>
 #include <cstdint>
 #include <list>
+#include <chrono>
 
 #include "ThreeD/Mesh.hpp"
 #include "ThreeD/Material.hpp"
@@ -21,6 +22,9 @@
 #define DLLEXPORT
 #endif
 
+
+bool keyCodes[400];
+
 extern "C"
 {
     DLLEXPORT unsigned long NvOptimusEnablement = 0x00000001;
@@ -29,19 +33,36 @@ extern "C"
 
 #include "window/Application.hpp"
 #include "ThreeD/Camera.h"
+#include "ThreeD/Light.h"
+
+void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    if (action == GLFW_PRESS) {
+        keyCodes[key] = true; // Handle key press
+    }
+    if (action == GLFW_RELEASE) {
+        keyCodes[key] = false; // Handle key press
+    }
+}
 
 int main(void) {
+    const std::string title = "Projet OpenGL & Maths - ";
+    const float MOVE_SPEED = 20;
+    const float CAM_SENSI = 1;
+
     Window::Application app;
     GLFWwindow* window;
 
+
     if (!glfwInit()) return -1;
 
-    window = glfwCreateWindow(640, 480, "Projet OpenGL & Maths", NULL, NULL);
+    window = glfwCreateWindow(1080, 720, title.c_str(), NULL, NULL);
     if (!window)
     {
         glfwTerminate();
         return -1;
     }
+
+    glfwSetKeyCallback(window, keyCallback);
 
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
@@ -49,10 +70,10 @@ int main(void) {
 
     auto* basicShader = new GLShader();
     basicShader->LoadVertexShader(
-            "../shaders/basic/basic.vs.glsl"
+            "./shaders/basic/basic.vs.glsl"
     );
     basicShader->LoadFragmentShader(
-            "../shaders/basic/basic.fs.glsl"
+            "./shaders/basic/basic.fs.glsl"
     );
     basicShader->Create();
 
@@ -73,21 +94,44 @@ int main(void) {
     mesh->material.specular = Math::Vector3(0.633f, 0.727811f,0.633f);
     mesh->material.shininess =  250.f;
     mesh->name = "Dragon";
-    mesh->position = {0, 0, -20};
+    mesh->position = {0, 0, 20};
+    mesh->rotation = Math::Quaternion::Euler({0, M_PI, 0});
+    mesh->scale = {0.5, 0.5, 0.5};
 
     auto* mesh2 = new ThreeD::Mesh();
-    loadObjMesh(mesh2, "../TestObjects/cube.obj", "../TestObjects/materials/");
+    loadObjMesh(mesh2, "./TestObjects/cube.obj", "./TestObjects/materials/");
     mesh2->shader = basicShader;
     mesh2->name = "Cube";
-    mesh2->position = {4,0,-10};
+    mesh2->position = {4,0,10};
 
     auto* mesh3 = new ThreeD::Mesh();
-    loadObjMesh(mesh3, "../TestObjects/cube_wood.obj", "../TestObjects/materials/");
+    loadObjMesh(mesh3, "./TestObjects/cube_wood.obj", "./TestObjects/materials/");
     mesh3->shader = basicShader;
     mesh3->name = "Cube Wood";
-    mesh3->position = {-4,0,-10};
+    mesh3->position = {-4,0,10};
 
-    Camera camera = Camera();
+    ThreeD::Camera camera = ThreeD::Camera();
+
+    int width, height;
+    glfwGetWindowSize(window, &width, &height);
+    const float aspectRatio = float(width)/float(height);
+    const float zNear = 0.1f, zFar = 100.0f;
+    const float fovy = 45.f * M_PI/180.f;
+    const float cot = 1.f / tanf(fovy / 2.f);
+    camera.projectionMatrix = std::array<float, 16>({
+            cot/aspectRatio, 0.f, 0.f, 0.f, // 1ere colonne
+            0.f, cot, 0.f, 0.f,
+            0.f, 0.f, -zFar/(zFar-zNear), -1.f,
+            0.f, 0.f, -zFar*zNear/(zFar-zNear), 0.f
+    });
+
+    ThreeD::Light light = ThreeD::Light();
+    light.position = Math::Vector3(0.0f, 20.f, 0.0f);
+
+    light.ambient = Math::Vector3(1.0f, 1.0f, 1.0f);
+    light.diffuse = Math::Vector3(1.0f, 1.0f, 1.0f);
+    light.specular = Math::Vector3(1.0f, 1.0f, 1.0f);
+    light.color = Math::Vector3(1.0f, 1.0f, 1.0f);
 
     int meshCount = 3;
     auto* meshes = new ThreeD::Mesh[meshCount];
@@ -96,14 +140,62 @@ int main(void) {
     meshes[1] = *mesh2;
     meshes[2] = *mesh3;
 
+    std::chrono::time_point<std::chrono::system_clock> start, end;
+
+    float deltaTime = 0;
+
     while (!glfwWindowShouldClose(window))
     {
-        camera.rotation *= Math::Quaternion::Euler({0.1,0,0});
-        //std::cout << camera.rotation.ToMatrix() << std::endl;
-        app.render(window, meshes, meshCount, camera);
+
+        start = std::chrono::system_clock::now();
+
+        if (keyCodes[GLFW_KEY_W]) {
+            camera.position += camera.forward() * MOVE_SPEED * deltaTime;
+        }
+        if (keyCodes[GLFW_KEY_S]) {
+            camera.position -= camera.forward() * MOVE_SPEED * deltaTime;
+        }
+        if (keyCodes[GLFW_KEY_A]) {
+            camera.position -= camera.right() * MOVE_SPEED * deltaTime;
+        }
+        if (keyCodes[GLFW_KEY_D]) {
+            camera.position += camera.right() * MOVE_SPEED * deltaTime;
+        }
+        if (keyCodes[GLFW_KEY_SPACE]){
+            camera.position += camera.up() * MOVE_SPEED * deltaTime;
+        }
+        if (keyCodes[GLFW_KEY_LEFT_SHIFT]){
+            camera.position -= camera.up() * MOVE_SPEED * deltaTime;
+        }
+
+        if (keyCodes[GLFW_KEY_UP]){
+            camera.rotation *= Math::Quaternion::Euler(camera.forward() * CAM_SENSI * deltaTime);
+        }
+
+        if (keyCodes[GLFW_KEY_DOWN]){
+            camera.rotation *= Math::Quaternion::Euler(-camera.forward() * CAM_SENSI * deltaTime);
+        }
+
+        if(keyCodes[GLFW_KEY_LEFT]){
+            camera.rotation *= Math::Quaternion::Euler(-camera.up() * CAM_SENSI * deltaTime);
+        }
+
+        if(keyCodes[GLFW_KEY_RIGHT]){
+            camera.rotation *= Math::Quaternion::Euler(camera.up() * CAM_SENSI * deltaTime);
+        }
+
+
+
+        //light.position += {0, -0.05, 0};
+
+        app.render(window, meshes, meshCount, camera, light);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
+
+        end = std::chrono::system_clock::now();
+        deltaTime = (end - start).count() / 1000000000.0f;
+        glfwSetWindowTitle(glfwGetCurrentContext(), (title + std::to_string(1.0f / deltaTime)).c_str());
     }
 
     app.deinitialize(meshes, meshCount);

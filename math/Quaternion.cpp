@@ -51,10 +51,10 @@ namespace Math{
     }
 
     Quaternion Quaternion::operator*=(const Quaternion& q){
-        this->s = this->s * q.s - this->i * q.i - this->j * q.j - this->k * q.k;
-        this->i = this->s * q.i + this->i * q.s + this->j * q.k - this->k * q.j;
-        this->j = this->s * q.j - this->j * q.s + this->k * q.i + this->i * q.k;
-        this->k = this->s * q.k + this->k * q.s - this->i * q.j + this->j * q.i;
+        s = s * q.s - i * q.i - j * q.j - k * q.k;
+        i = s * q.i + i * q.s + j * q.k - k * q.j;
+        j = s * q.j - i * q.k + j * q.s + k * q.i;
+        k = s * q.k + i * q.j - j * q.i + k * q.s;
         return *this;
     }
 
@@ -72,11 +72,25 @@ namespace Math{
         return *this;
     }
 
+    Quaternion Quaternion::operator*=(const float &d){
+        this->s *= d;
+        this->i *= d;
+        this->j *= d;
+        this->k *= d;
+        return *this;
+    }
+
     Quaternion Quaternion::operator*(const double &d) const {
         Quaternion result = *this;
         result *= d;
         return result;
     }
+    Quaternion Quaternion::operator*(const float &d) const {
+        Quaternion result = *this;
+        result *= d;
+        return result;
+    }
+
 
     Quaternion Quaternion::operator^=(const Quaternion &q){
         this->s = 0.0;
@@ -98,7 +112,18 @@ namespace Math{
     }
 
     Quaternion operator*(const double &d, const Quaternion &q) {
-        return q*d;
+        return q * d;
+    }
+
+    Quaternion operator*(const float &d, const Quaternion &q) {
+        return q * d;
+    }
+
+
+    Vector3 Quaternion::operator*(const Vector3& v) const {
+        Vector3 u(i, j, k);
+        Vector3 t = Vector3::crossProduct(u, v) * (double)2;
+        return v + t * s + Vector3::crossProduct(u, t);
     }
 
     /**

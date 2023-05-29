@@ -35,6 +35,25 @@ namespace Math {
 
         double operator[](int i) const { return (&x)[i]; };
 
+        bool operator==(const Vector3 &rhs) const;
+
+        bool operator!=(const Vector3 &rhs) const;
+
+        Vector3 operator+=(const Vector3 &rhs);
+
+        Vector3 operator-=(const Vector3 &rhs);
+
+        Vector3 operator-() const;
+
+        Vector3 operator*=(const double& i);
+
+        Vector3 operator*(const double& i) const;
+
+        Vector3 operator+(const Vector3& v) const;
+
+        static double dotProduct(const Vector3 &u, const Vector3 &v);
+
+        static Vector3 crossProduct(const Vector3 &u, const Vector3 &v);
     };
 
 } // Math
