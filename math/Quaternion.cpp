@@ -167,6 +167,11 @@ namespace Math{
         return {this->s, this->i / norm, this->j / norm, this->k / norm};
     }
 
+    Quaternion Quaternion::Normalize(){
+        *this = this->Normalized();
+        return *this;
+    }
+
     [[maybe_unused]] double Quaternion::DotProduct(const Quaternion& q) const {
         return this->i*q.i + this->j*q.j + this->k*q.k + this->s*q.s;
     }
@@ -175,19 +180,19 @@ namespace Math{
         return Quaternion::Euler(euler.x, euler.y, euler.z);
     }
 
-    Quaternion Quaternion::Euler(float x, float y, float z) {
-        float c1 = cos(x / 2);
-        float c2 = cos(y / 2);
-        float c3 = cos(z / 2);
-        float s1 = sin(x / 2);
-        float s2 = sin(y / 2);
-        float s3 = sin(z / 2);
+    Quaternion Quaternion::Euler(double x, double y, double z) {
+        float cos1 = cos(x / 2);
+        float cos2 = cos(y / 2);
+        float cos3 = cos(z / 2);
+        float sin1 = sin(x / 2);
+        float sin2 = sin(y / 2);
+        float sin3 = sin(z / 2);
 
         return Quaternion(
-                c1 * c2 * c3 - s1 * s2 * s3,
-                s1 * c2 * c3 + c1 * s2 * s3,
-                c1 * s2 * c3 + s1 * c2 * s3,
-                c1 * c2 * s3 - s1 * s2 * c3
+                cos1 * cos2 * cos3 - sin1 * sin2 * sin3,
+                sin1 * cos2 * cos3 + cos1 * sin2 * sin3,
+                cos1 * sin2 * cos3 + sin1 * cos2 * sin3,
+                cos1 * cos2 * sin3 - sin1 * sin2 * cos3
         );
     }
 }

@@ -74,9 +74,9 @@ namespace Window {
                 //TRANSFORM
                 // une matrice OpenGL est definie en COLONNE
 
-                const auto MESH_ROT = glGetUniformLocation(program, "u_rotationMatrix");
+                const auto MESH_ROT = glGetUniformLocation(program, "u_meshRotation");
                 glUniform4f(MESH_ROT, meshes[i].rotation.getS(), meshes[i].rotation.getI(), meshes[i].rotation.getJ(), meshes[i].rotation.getK());
-                GLReportError("Rotation Matrix");
+                GLReportError("Mesh Rotation");
 
                 const auto MESH_POS = glGetUniformLocation(program, "u_meshPosition");
                 glUniform3f(MESH_POS, meshes[i].position.getX(), meshes[i].position.getY(), meshes[i].position.getZ());

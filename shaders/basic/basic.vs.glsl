@@ -11,7 +11,7 @@ out vec4 v_color;
 
 uniform vec3 u_scale;
 uniform vec3 u_meshPosition;
-uniform vec4 u_rotationMatrix;
+uniform vec4 u_meshRotation;
 uniform mat4 u_projectionMatrix;
 uniform vec3 camPos;
 uniform vec4 camRot;
@@ -47,7 +47,7 @@ void main(void)
 	//Output to fragment shader
 	f_texCoords = a_texCoord;
 	FragPos = a_position + u_meshPosition;
-	f_normal = rotate(u_rotationMatrix, a_normal);
+	f_normal = rotate(u_meshRotation, a_normal);
 	v_camPos = camPos;
 
 
@@ -57,7 +57,7 @@ void main(void)
 	a_position.y * u_scale.y,
 	a_position.z * u_scale.z
 	);
-	machin = rotate(u_rotationMatrix, machin);
+	machin = rotate(u_meshRotation, machin);
 	machin += u_meshPosition;
 	FragPos = machin;
 	machin -= camPos;

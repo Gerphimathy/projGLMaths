@@ -67,7 +67,9 @@ namespace Math{
         [[maybe_unused]] [[nodiscard]] double DotProduct(const Quaternion& q) const;
 
         static Quaternion Euler(const Math::Vector3& euler);
-        static Quaternion Euler(float x, float y, float z);
+        static Quaternion Euler(double x, double y, double z);
+
+        Quaternion Normalize();
     };
 
 }

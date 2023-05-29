@@ -32,5 +32,7 @@ namespace ThreeD {
         void loadShader(const char* vertexShader, const char* fragmentShader);
 
         Mesh();
+
+        void rotate(const Math::Quaternion q);
     };
 }

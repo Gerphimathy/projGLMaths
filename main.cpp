@@ -95,7 +95,7 @@ int main(void) {
     mesh->material.shininess =  250.f;
     mesh->name = "Dragon";
     mesh->position = {0, 0, 20};
-    mesh->rotation = Math::Quaternion::Euler({0, M_PI, 0});
+    mesh->rotation = Math::Quaternion::Euler({0, 0, 0});
     mesh->scale = {0.5, 0.5, 0.5};
 
     auto* mesh2 = new ThreeD::Mesh();
@@ -103,12 +103,29 @@ int main(void) {
     mesh2->shader = basicShader;
     mesh2->name = "Cube";
     mesh2->position = {4,0,10};
+    mesh2->rotation = Math::Quaternion::Euler({0, 0, 0});
 
     auto* mesh3 = new ThreeD::Mesh();
     loadObjMesh(mesh3, "./TestObjects/cube_wood.obj", "./TestObjects/materials/");
     mesh3->shader = basicShader;
     mesh3->name = "Cube Wood";
     mesh3->position = {-4,0,10};
+    mesh3->rotation = Math::Quaternion::Euler({0, 0, 0});
+
+    auto* mesh4 = new ThreeD::Mesh();
+    loadObjMesh(mesh4, "./TestObjects/borne_darcade_Pacman.obj", "./TestObjects/materials/");
+    mesh4->shader = basicShader;
+    mesh4->name = "Borne";
+
+    mesh4->material = ThreeD::Material();
+    mesh4->material.diffuse = Math::Vector3(1, 0.7, 0.7);
+    mesh4->material.ambient = Math::Vector3(0, 0, 0);
+    mesh4->material.specular = Math::Vector3(0, 0,0);
+    mesh4->material.shininess =  20.f;
+
+    mesh4->position = {0, -5, 10};
+    mesh4->rotation = Math::Quaternion::Euler({0, 0, 0});
+
 
     ThreeD::Camera camera = ThreeD::Camera();
 
@@ -133,16 +150,20 @@ int main(void) {
     light.specular = Math::Vector3(1.0f, 1.0f, 1.0f);
     light.color = Math::Vector3(1.0f, 1.0f, 1.0f);
 
-    int meshCount = 3;
+    int meshCount = 4;
     auto* meshes = new ThreeD::Mesh[meshCount];
 
     meshes[0] = *mesh;
     meshes[1] = *mesh2;
     meshes[2] = *mesh3;
+    meshes[3] = *mesh4;
 
     std::chrono::time_point<std::chrono::system_clock> start, end;
 
     float deltaTime = 0;
+
+
+    std::cout << Math::Quaternion::Euler(0,0,0) << std::endl;
 
     while (!glfwWindowShouldClose(window))
     {
@@ -184,6 +205,10 @@ int main(void) {
             camera.rotation *= Math::Quaternion::Euler(camera.up() * CAM_SENSI * deltaTime);
         }
 
+        camera.rotation.Normalize();
+
+        meshes[0].rotate(Math::Quaternion::Euler(0, M_PI * deltaTime * 2, 0));
+        meshes[3].rotate(Math::Quaternion::Euler(0, 0,  M_PI * deltaTime * 2));
 
 
         //light.position += {0, -0.05, 0};
