@@ -9,6 +9,21 @@
 #include "../ThreeD/Light.h"
 
 namespace Window {
+
+    void GLAPIENTRY
+    MessageCallback( GLenum source,
+                     GLenum type,
+                     GLuint id,
+                     GLenum severity,
+                     GLsizei length,
+                     const GLchar* message,
+                     const void* userParam ){
+
+        fprintf( stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
+                 ( type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : "" ),
+                 type, severity, message );
+    }
+
     struct Application
     {
 
@@ -20,7 +35,8 @@ namespace Window {
 
             GLenum error = glewInit();
 
-
+            glEnable(GL_DEBUG_OUTPUT);
+            //glDebugMessageCallback(MessageCallback, 0);
 
 
 
@@ -75,7 +91,7 @@ namespace Window {
                 // une matrice OpenGL est definie en COLONNE
 
                 const auto MESH_ROT = glGetUniformLocation(program, "u_meshRotation");
-                glUniform4f(MESH_ROT, meshes[i].rotation.getS(), meshes[i].rotation.getI(), meshes[i].rotation.getJ(), meshes[i].rotation.getK());
+                glUniform4f(MESH_ROT, meshes[i].rotation.getI(), meshes[i].rotation.getJ(), meshes[i].rotation.getK(), meshes[i].rotation.getS());
                 GLReportError("Mesh Rotation");
 
                 const auto MESH_POS = glGetUniformLocation(program, "u_meshPosition");
@@ -101,7 +117,7 @@ namespace Window {
                 GLReportError("Camera Position");
 
                 const auto CAM_ROT = glGetUniformLocation(program, "camRot");
-                glUniform4f(CAM_ROT, camera.getRotation().getS(), camera.getRotation().getI(), camera.getRotation().getJ(), camera.getRotation().getK());
+                glUniform4f(CAM_ROT, -camera.getRotation().getI(), -camera.getRotation().getJ(), -camera.getRotation().getK(), camera.getRotation().getS());
                 GLReportError("Camera Rotation");
 
                 //Texture
@@ -191,4 +207,7 @@ namespace Window {
             }
         }
     };
+
+
+
 }

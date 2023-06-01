@@ -16,6 +16,10 @@
 
 #include "loader/loadMesh.h"
 
+#include "window/Application.hpp"
+#include "ThreeD/Camera.h"
+#include "ThreeD/Light.h"
+
 #ifdef _MSC_VER
 #define DLLEXPORT __declspec(dllexport)
 #else
@@ -31,18 +35,20 @@ extern "C"
     DLLEXPORT int AmdPowerXpressRequestHighPerformance = 1;
 }
 
-#include "window/Application.hpp"
-#include "ThreeD/Camera.h"
-#include "ThreeD/Light.h"
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (action == GLFW_PRESS) {
         keyCodes[key] = true; // Handle key press
     }
     if (action == GLFW_RELEASE) {
-        keyCodes[key] = false; // Handle key press
+        keyCodes[key] = false; // Handle key release
     }
 }
+
+
+
+
+// During init, enable debug output
 
 int main(void) {
     const std::string title = "Projet OpenGL & Maths - ";
@@ -51,6 +57,8 @@ int main(void) {
 
     Window::Application app;
     GLFWwindow* window;
+
+
 
 
     if (!glfwInit()) return -1;
@@ -141,9 +149,10 @@ int main(void) {
             0.f, 0.f, -zFar/(zFar-zNear), -1.f,
             0.f, 0.f, -zFar*zNear/(zFar-zNear), 0.f
     });
+    camera.rotation = Math::Quaternion::Euler(0, M_PI, 0);
 
     ThreeD::Light light = ThreeD::Light();
-    light.position = Math::Vector3(0.0f, 20.f, 0.0f);
+    light.position = Math::Vector3(0.0f, 20.f, 20.0f);
 
     light.ambient = Math::Vector3(1.0f, 1.0f, 1.0f);
     light.diffuse = Math::Vector3(1.0f, 1.0f, 1.0f);
@@ -163,7 +172,6 @@ int main(void) {
     float deltaTime = 0;
 
 
-    std::cout << Math::Quaternion::Euler(0,0,0) << std::endl;
 
     while (!glfwWindowShouldClose(window))
     {
@@ -171,10 +179,10 @@ int main(void) {
         start = std::chrono::system_clock::now();
 
         if (keyCodes[GLFW_KEY_W]) {
-            camera.position += camera.forward() * MOVE_SPEED * deltaTime;
+            camera.position -= camera.forward() * MOVE_SPEED * deltaTime;
         }
         if (keyCodes[GLFW_KEY_S]) {
-            camera.position -= camera.forward() * MOVE_SPEED * deltaTime;
+            camera.position += camera.forward() * MOVE_SPEED * deltaTime;
         }
         if (keyCodes[GLFW_KEY_A]) {
             camera.position -= camera.right() * MOVE_SPEED * deltaTime;
@@ -189,39 +197,56 @@ int main(void) {
             camera.position -= camera.up() * MOVE_SPEED * deltaTime;
         }
 
+
         if (keyCodes[GLFW_KEY_UP]){
-            camera.rotation *= Math::Quaternion::Euler(camera.forward() * CAM_SENSI * deltaTime);
+            camera.rotate(Math::Quaternion::Euler(CAM_SENSI * deltaTime,0,0));
         }
 
         if (keyCodes[GLFW_KEY_DOWN]){
-            camera.rotation *= Math::Quaternion::Euler(-camera.forward() * CAM_SENSI * deltaTime);
+            camera.rotate(Math::Quaternion::Euler(-CAM_SENSI * deltaTime,0,0));
         }
 
         if(keyCodes[GLFW_KEY_LEFT]){
-            camera.rotation *= Math::Quaternion::Euler(-camera.up() * CAM_SENSI * deltaTime);
+            camera.rotate(Math::Quaternion::Euler(0,CAM_SENSI * deltaTime,0));
         }
 
         if(keyCodes[GLFW_KEY_RIGHT]){
-            camera.rotation *= Math::Quaternion::Euler(camera.up() * CAM_SENSI * deltaTime);
+            camera.rotate(Math::Quaternion::Euler(0,-CAM_SENSI * deltaTime,0));
         }
 
-        camera.rotation.Normalize();
+        if(keyCodes[GLFW_KEY_Q]){
+            camera.rotate(Math::Quaternion::Euler(0,0,CAM_SENSI * deltaTime));
+        }
+
+        if(keyCodes[GLFW_KEY_E]){
+            camera.rotate(Math::Quaternion::Euler(0,0,-CAM_SENSI * deltaTime));
+        }
+
 
         meshes[0].rotate(Math::Quaternion::Euler(0, M_PI * deltaTime * 2, 0));
+
+        meshes[1].rotate(Math::Quaternion::Euler(M_PI * deltaTime * 2, 0, 0));
+
+        meshes[2].rotate(Math::Quaternion::Euler(M_PI * deltaTime * 2, M_PI * deltaTime * 2, M_PI * deltaTime * 2));
+
         meshes[3].rotate(Math::Quaternion::Euler(0, 0,  M_PI * deltaTime * 2));
 
-
-        //light.position += {0, -0.05, 0};
 
         app.render(window, meshes, meshCount, camera, light);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
 
+
         end = std::chrono::system_clock::now();
         deltaTime = (end - start).count() / 1000000000.0f;
         glfwSetWindowTitle(glfwGetCurrentContext(), (title + std::to_string(1.0f / deltaTime)).c_str());
     }
+
+    delete mesh;
+    delete mesh2;
+    delete mesh3;
+    delete mesh4;
 
     app.deinitialize(meshes, meshCount);
 

@@ -33,6 +33,10 @@ namespace ThreeD {
         Math::Vector3 forward() const;
 
         Math::Vector3 right() const;
+
+        void rotate(const Math::Quaternion q);
+
+        void rotateByAxisAndAngle(const Math::Vector3 u, const double angle);
     };
 
 }

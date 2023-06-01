@@ -32,8 +32,18 @@ namespace Math {
         Vector3::z = z;
     }
 
-    double Vector3::Norm() {
+    double Vector3::Norm() const {
         return std::sqrt(x*x + y*y + z*z);
+    }
+
+    Vector3 Vector3::Normalized() const
+    {
+        double norm = this->Norm();
+        if(norm == 0.0)
+        {
+            return {};
+        }
+        return {x / norm, y / norm, z / norm};
     }
 
     double Vector3::dotProduct(const Vector3& u, const Vector3& v) {
@@ -95,9 +105,10 @@ namespace Math {
         return temp;
     }
 
+    std::ostream& operator<<(std::ostream& os, const Math::Vector3& v){
+        os << "(" << v.x << ", " << v.y << ", " << v.z << ")";
+        return os;
+    }
+
 } // Math
 
-std::ostream& operator<<(std::ostream& os, const Math::Vector3& v){
-    os << "(" << v.x << ", " << v.y << ", " << v.z << ")";
-    return os;
-}

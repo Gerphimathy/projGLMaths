@@ -51,10 +51,14 @@ namespace Math{
     }
 
     Quaternion Quaternion::operator*=(const Quaternion& q){
-        s = s * q.s - i * q.i - j * q.j - k * q.k;
-        i = s * q.i + i * q.s + j * q.k - k * q.j;
-        j = s * q.j - i * q.k + j * q.s + k * q.i;
-        k = s * q.k + i * q.j - j * q.i + k * q.s;
+        double tempS = s;
+        double tempI = i;
+        double tempJ = j;
+        double tempK = k;
+        s = tempS * q.s - tempI * q.i - tempJ * q.j - tempK * q.k;
+        i = tempS * q.i + tempI * q.s + tempJ * q.k - tempK * q.j;
+        j = tempS * q.j - tempI * q.k + tempJ * q.s + tempK * q.i;
+        k = tempS * q.k + tempI * q.j - tempJ * q.i + tempK * q.s;
         return *this;
     }
 
@@ -121,9 +125,16 @@ namespace Math{
 
 
     Vector3 Quaternion::operator*(const Vector3& v) const {
+        /*
         Vector3 u(i, j, k);
         Vector3 t = Vector3::crossProduct(u, v) * (double)2;
         return v + t * s + Vector3::crossProduct(u, t);
+         */
+        Quaternion vv = {0,v.x,v.y,v.z};
+        Quaternion conj = this->Conjugate();
+        vv = *this * vv;
+        vv *= conj;
+        return {vv.i, vv.j, vv.k};
     }
 
     /**
@@ -164,7 +175,7 @@ namespace Math{
         {
             return {};
         }
-        return {this->s, this->i / norm, this->j / norm, this->k / norm};
+        return {this->s / norm, this->i / norm, this->j / norm, this->k / norm};
     }
 
     Quaternion Quaternion::Normalize(){
@@ -194,5 +205,36 @@ namespace Math{
                 cos1 * sin2 * cos3 + sin1 * cos2 * sin3,
                 cos1 * cos2 * sin3 - sin1 * sin2 * cos3
         );
+    }
+
+    Vector3 Quaternion::toEuler() const {
+        double square_s = s * s;
+        double square_i = i * i;
+        double square_j = j * j;
+        double square_k = k * k;
+        double unit = square_i + square_j + square_k + square_s;
+        double test = i * j + k * s;
+
+        Vector3 euler;
+
+        if (test > 0.4999 * unit) {
+            euler.y = 2 * atan2(i, s);
+            euler.z = M_PI / 2;
+            euler.x = 0;
+            return euler;
+        }
+
+        if (test < -0.4999 * unit) {
+            euler.y = -2 * atan2(i, s);
+            euler.z = -M_PI / 2;
+            euler.x = 0;
+            return euler;
+        }
+
+        euler.y = atan2(2 * j * s - 2 * i * k, square_i - square_j - square_k + square_s);
+        euler.z = asin(2 * test / unit);
+        euler.x = atan2(2 * i * s - 2 * j * k, -square_i + square_j - square_k + square_s);
+
+        return euler;
     }
 }

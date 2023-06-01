@@ -29,15 +29,27 @@ namespace ThreeD {
     }
 
     Math::Vector3 ThreeDObject::forward() const {
-        return rotation * Math::Vector3{ 0, 0, 1 };
+        return (rotation * Math::Vector3{ 0, 0, 1 }).Normalized();
     }
 
     Math::Vector3 ThreeDObject::right() const {
-        return rotation * Math::Vector3{ 1, 0, 0 };
+        return (rotation * Math::Vector3{ 1, 0, 0 }).Normalized();
     }
 
     Math::Vector3 ThreeDObject::up() const {
-        return rotation * Math::Vector3{ 0, -1, 0 };
+        return (rotation * Math::Vector3{ 0, 1, 0 }).Normalized();
+    }
+
+    void ThreeDObject::rotate(const Math::Quaternion q){
+        rotation *= q;
+        rotation.Normalize();
+    }
+
+    void ThreeDObject::rotateByAxisAndAngle(const Math::Vector3 u, const double angle){
+        double c = cos(angle);
+        double s = sin(angle);
+        Math::Quaternion q = {c, u.x * s, u.y * s, u.z * s};
+        rotate(q);
     }
 
 }

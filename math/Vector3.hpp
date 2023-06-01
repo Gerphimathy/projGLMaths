@@ -31,7 +31,7 @@ namespace Math {
 
         void setZ(double z);
 
-        double Norm();
+        double Norm() const;
 
         double operator[](int i) const { return (&x)[i]; };
 
@@ -51,9 +51,13 @@ namespace Math {
 
         Vector3 operator+(const Vector3& v) const;
 
+        friend std::ostream& operator<<(std::ostream& os, const Math::Vector3& v);
+
         static double dotProduct(const Vector3 &u, const Vector3 &v);
 
         static Vector3 crossProduct(const Vector3 &u, const Vector3 &v);
+
+        Vector3 Normalized() const;
     };
 
 } // Math

@@ -7,7 +7,6 @@ in vec2 a_texCoord;
 uniform float u_usetexture;
 out float f_usetexture;
 
-out vec4 v_color;
 
 uniform vec3 u_scale;
 uniform vec3 u_meshPosition;
@@ -23,6 +22,8 @@ out vec3 f_normal;
 out vec3 v_camPos;
 
 vec3 rotate(vec4 rotation, vec3 position) {
+
+
 	vec3 u = rotation.xyz;
 
 	vec3 temp = vec3(
@@ -38,6 +39,16 @@ vec3 rotate(vec4 rotation, vec3 position) {
 		u.z * temp.x - u.x * temp.z,
 		u.x * temp.y - u.y * temp.x
 	);
+
+	/*
+	vec4 pos = vec4(position,0);
+	vec4 conj = -rotation;
+	pos = rotation * pos;
+	pos = pos * conj;
+
+	return (pos.xyz);
+	*/
+
 }
 
 void main(void)
@@ -46,7 +57,6 @@ void main(void)
 
 	//Output to fragment shader
 	f_texCoords = a_texCoord;
-	FragPos = a_position + u_meshPosition;
 	f_normal = rotate(u_meshRotation, a_normal);
 	v_camPos = camPos;
 
@@ -61,7 +71,7 @@ void main(void)
 	machin += u_meshPosition;
 	FragPos = machin;
 	machin -= camPos;
-	machin = rotate(-camRot, machin);
+	machin = rotate(camRot, machin);
 	gl_Position = u_projectionMatrix * vec4(machin, 1);
 
 

@@ -41,8 +41,5 @@ namespace ThreeD{
         name="";
     }
 
-    void Mesh::rotate(const Math::Quaternion q){
-        rotation *= q;
-        rotation.Normalize();
-    }
+
 }

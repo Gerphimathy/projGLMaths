@@ -15,6 +15,7 @@ namespace Math{
         double i;
         double j;
         double k;
+
     public:
 
         //Constructors
@@ -70,6 +71,8 @@ namespace Math{
         static Quaternion Euler(double x, double y, double z);
 
         Quaternion Normalize();
+
+        Vector3 toEuler() const;
     };
 
 }

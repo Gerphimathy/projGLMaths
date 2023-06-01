@@ -33,6 +33,5 @@ namespace ThreeD {
 
         Mesh();
 
-        void rotate(const Math::Quaternion q);
     };
 }
