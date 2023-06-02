@@ -52,4 +52,14 @@ namespace ThreeD {
         rotate(q);
     }
 
+    void ThreeDObject::rotateAroundAnAxis(const Math::Vector3 position, const Math::Quaternion q){
+        Math::Vector3 translation = this->position + -position;
+        setPosition(position + -translation);
+        this->rotate(q);
+        translation = q * translation;
+        setPosition(position + translation);
+
+
+    }
+
 }

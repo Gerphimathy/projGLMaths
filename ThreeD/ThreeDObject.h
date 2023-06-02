@@ -37,6 +37,8 @@ namespace ThreeD {
         void rotate(const Math::Quaternion q);
 
         void rotateByAxisAndAngle(const Math::Vector3 u, const double angle);
+
+        void rotateAroundAnAxis(const Math::Vector3 position, const Math::Quaternion q);
     };
 
 }

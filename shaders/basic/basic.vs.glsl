@@ -23,7 +23,6 @@ out vec3 v_camPos;
 
 vec3 rotate(vec4 rotation, vec3 position) {
 
-
 	vec3 u = rotation.xyz;
 
 	vec3 temp = vec3(

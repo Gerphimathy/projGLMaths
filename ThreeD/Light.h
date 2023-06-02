@@ -6,12 +6,12 @@
 #define MATH_LIGHT_H
 
 #include "../math/Vector3.hpp"
+#include "ThreeDObject.h"
 
 namespace ThreeD {
 
-    class Light {
+    class Light : public virtual ThreeDObject{
     public:
-        Math::Vector3 position;
         Math::Vector3 ambient;
         Math::Vector3 diffuse;
         Math::Vector3 specular;

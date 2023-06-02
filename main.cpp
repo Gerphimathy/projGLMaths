@@ -104,7 +104,7 @@ int main(void) {
     mesh->name = "Dragon";
     mesh->position = {0, 0, 20};
     mesh->rotation = Math::Quaternion::Euler({0, 0, 0});
-    mesh->scale = {0.5, 0.5, 0.5};
+    mesh->scale = {1, 1, 1};
 
     auto* mesh2 = new ThreeD::Mesh();
     loadObjMesh(mesh2, "./TestObjects/cube.obj", "./TestObjects/materials/");
@@ -140,7 +140,7 @@ int main(void) {
     int width, height;
     glfwGetWindowSize(window, &width, &height);
     const float aspectRatio = float(width)/float(height);
-    const float zNear = 0.1f, zFar = 100.0f;
+    const float zNear = 0.1f, zFar = 1000.0f;
     const float fovy = 45.f * M_PI/180.f;
     const float cot = 1.f / tanf(fovy / 2.f);
     camera.projectionMatrix = std::array<float, 16>({
@@ -170,6 +170,13 @@ int main(void) {
     std::chrono::time_point<std::chrono::system_clock> start, end;
 
     float deltaTime = 0;
+
+
+    Math::Quaternion q = Math::Quaternion::Euler({0,M_PI,0});
+    std::cout << "Quaternion : " << q << std::endl;
+    Math::Matrix4_4 m = q.ToMatrix();
+    std::cout << "Matrix convertie : " << m << std::endl;
+    std::cout << "Quaternion reconverti : " << m.ToQuaternion() << std::endl;
 
 
 
@@ -223,14 +230,15 @@ int main(void) {
         }
 
 
-        meshes[0].rotate(Math::Quaternion::Euler(0, M_PI * deltaTime * 2, 0));
+        //meshes[0].rotateAroundAnAxis({0,0,0}, Math::Quaternion::Euler(0, M_PI * deltaTime, 0));
 
-        meshes[1].rotate(Math::Quaternion::Euler(M_PI * deltaTime * 2, 0, 0));
+        meshes[1].rotate(Math::Quaternion::Euler(M_PI * deltaTime, 0, 0));
 
-        meshes[2].rotate(Math::Quaternion::Euler(M_PI * deltaTime * 2, M_PI * deltaTime * 2, M_PI * deltaTime * 2));
+        meshes[2].rotateAroundAnAxis({0,0,0},Math::Quaternion::Euler(M_PI * deltaTime, M_PI * deltaTime, M_PI * deltaTime));
 
-        meshes[3].rotate(Math::Quaternion::Euler(0, 0,  M_PI * deltaTime * 2));
+        meshes[3].rotateAroundAnAxis(meshes[1].position, Math::Quaternion::Euler(0, 0,  M_PI * deltaTime));
 
+        light.rotateAroundAnAxis({0,0,0}, Math::Quaternion::Euler(0, -M_PI * deltaTime * 5, 0) );
 
         app.render(window, meshes, meshCount, camera, light);
 

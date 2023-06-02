@@ -8,6 +8,9 @@
 #include "Matrix.hpp"
 #include "Quaternion.hpp"
 
+inline float SIGN(float x) {
+    return (x >= 0.0f) ? +1.0f : -1.0f;
+}
 
 namespace Math{
 
@@ -209,12 +212,67 @@ namespace Math{
      * |                            |
      */
 
-    Quaternion Matrix4_4::ToQuaternion() const {
-        double s = sqrt(1 + get(0, 0) + get(1, 1) + get(2, 2)) / 2;
-        double i = (get(2, 1) - get(1, 2)) / (4 * s);
-        double j = (get(0, 2) - get(2, 0)) / (4 * s);
-        double k = (get(1, 0) - get(0, 1)) / (4 * s);
-        return {s, i, j, k};
+    Quaternion Matrix4_4::ToQuaternion() const{
+        double r11 = get(0, 0);
+        double r12 = get(0, 1);
+        double r13 = get(0, 2);
+        double r21 = get(1, 0);
+        double r22 = get(1, 1);
+        double r23 = get(1, 2);
+        double r31 = get(2, 0);
+        double r32 = get(2, 1);
+        double r33 = get(2, 2);
+        double q0 = (r11 + r22 + r33 + 1.) / 4.;
+        double q1 = (r11 - r22 - r33 + 1.) / 4.;
+        double q2 = (-r11 + r22 - r33 + 1.) / 4.;
+        double q3 = (-r11 - r22 + r33 + 1.) / 4.;
+        if (q0 < 0.) {
+            q0 = 0.;
+        }
+        if (q1 < 0.) {
+            q1 = 0.;
+        }
+        if (q2 < 0.) {
+            q2 = 0.;
+        }
+        if (q3 < 0.) {
+            q3 = 0.;
+        }
+        q0 = sqrt(q0);
+        q1 = sqrt(q1);
+        q2 = sqrt(q2);
+        q3 = sqrt(q3);
+        if (q0 >= q1 && q0 >= q2 && q0 >= q3) {
+            q0 *= +1.;
+            q1 *= SIGN(r32 - r23);
+            q2 *= SIGN(r13 - r31);
+            q3 *= SIGN(r21 - r12);
+        } else if (q1 >= q0 && q1 >= q2 && q1 >= q3) {
+            q0 *= SIGN(r32 - r23);
+            q1 *= +1.;
+            q2 *= SIGN(r21 + r12);
+            q3 *= SIGN(r13 + r31);
+        } else if (q2 >= q0 && q2 >= q1 && q2 >= q3) {
+            q0 *= SIGN(r13 - r31);
+            q1 *= SIGN(r21 + r12);
+            q2 *= +1.;
+            q3 *= SIGN(r32 + r23);
+        } else if (q3 >= q0 && q3 >= q1 && q3 >= q2) {
+            q0 *= SIGN(r21 - r12);
+            q1 *= SIGN(r31 + r13);
+            q2 *= SIGN(r32 + r23);
+            q3 *= +1.;
+        } else {
+            printf("Should not get there\n");
+        }
+        double r = Quaternion{q0, q1, q2, q3}.Norm();
+        q0 /= r;
+        q1 /= r;
+        q2 /= r;
+        q3 /= r;
+
+        Quaternion q = {q0, q1, q2, q3};
+        return q;
     }
 
     std::array<float, 16> Matrix4_4::ToArray() const {
@@ -242,4 +300,7 @@ namespace Math{
      */
 
 
+
 }
+
+
