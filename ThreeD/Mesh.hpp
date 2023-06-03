@@ -10,6 +10,7 @@
 #include "../shaders/GLShader.hpp"
 #include "../math/Quaternion.hpp"
 #include "ThreeDObject.h"
+#include "Polygon.hpp"
 
 namespace ThreeD {
     struct Mesh : public virtual ThreeDObject{

@@ -17,6 +17,9 @@
 #include "loader/loadMesh.h"
 
 #include "window/Application.hpp"
+#include "window/Controls.hpp"
+
+
 #include "ThreeD/Camera.h"
 #include "ThreeD/Light.h"
 
@@ -26,8 +29,6 @@
 #define DLLEXPORT
 #endif
 
-
-bool keyCodes[400];
 
 extern "C"
 {
@@ -46,19 +47,13 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 }
 
 
-
-
 // During init, enable debug output
 
 int main(void) {
     const std::string title = "Projet OpenGL & Maths - ";
-    const float MOVE_SPEED = 20;
-    const float CAM_SENSI = 1;
 
     Window::Application app;
     GLFWwindow* window;
-
-
 
 
     if (!glfwInit()) return -1;
@@ -120,6 +115,7 @@ int main(void) {
     mesh3->position = {-4,0,10};
     mesh3->rotation = Math::Quaternion::Euler({0, 0, 0});
 
+    /*
     auto* mesh4 = new ThreeD::Mesh();
     loadObjMesh(mesh4, "./TestObjects/borne_darcade_Pacman.obj", "./TestObjects/materials/");
     mesh4->shader = basicShader;
@@ -133,9 +129,10 @@ int main(void) {
 
     mesh4->position = {0, -5, 10};
     mesh4->rotation = Math::Quaternion::Euler({0, 0, 0});
-
+    */
 
     ThreeD::Camera camera = ThreeD::Camera();
+
 
     int width, height;
     glfwGetWindowSize(window, &width, &height);
@@ -159,92 +156,39 @@ int main(void) {
     light.specular = Math::Vector3(1.0f, 1.0f, 1.0f);
     light.color = Math::Vector3(1.0f, 1.0f, 1.0f);
 
-    int meshCount = 4;
+    int meshCount = 3;
     auto* meshes = new ThreeD::Mesh[meshCount];
 
     meshes[0] = *mesh;
     meshes[1] = *mesh2;
     meshes[2] = *mesh3;
-    meshes[3] = *mesh4;
+    //meshes[3] = *mesh4;
 
     std::chrono::time_point<std::chrono::system_clock> start, end;
 
     float deltaTime = 0;
-
-
-    Math::Quaternion q = Math::Quaternion::Euler({0,M_PI,0});
-    std::cout << "Quaternion : " << q << std::endl;
-    Math::Matrix4_4 m = q.ToMatrix();
-    std::cout << "Matrix convertie : " << m << std::endl;
-    std::cout << "Quaternion reconverti : " << m.ToQuaternion() << std::endl;
-
-
 
     while (!glfwWindowShouldClose(window))
     {
 
         start = std::chrono::system_clock::now();
 
-        if (keyCodes[GLFW_KEY_W]) {
-            camera.position -= camera.forward() * MOVE_SPEED * deltaTime;
-        }
-        if (keyCodes[GLFW_KEY_S]) {
-            camera.position += camera.forward() * MOVE_SPEED * deltaTime;
-        }
-        if (keyCodes[GLFW_KEY_A]) {
-            camera.position -= camera.right() * MOVE_SPEED * deltaTime;
-        }
-        if (keyCodes[GLFW_KEY_D]) {
-            camera.position += camera.right() * MOVE_SPEED * deltaTime;
-        }
-        if (keyCodes[GLFW_KEY_SPACE]){
-            camera.position += camera.up() * MOVE_SPEED * deltaTime;
-        }
-        if (keyCodes[GLFW_KEY_LEFT_SHIFT]){
-            camera.position -= camera.up() * MOVE_SPEED * deltaTime;
-        }
-
-
-        if (keyCodes[GLFW_KEY_UP]){
-            camera.rotate(Math::Quaternion::Euler(CAM_SENSI * deltaTime,0,0));
-        }
-
-        if (keyCodes[GLFW_KEY_DOWN]){
-            camera.rotate(Math::Quaternion::Euler(-CAM_SENSI * deltaTime,0,0));
-        }
-
-        if(keyCodes[GLFW_KEY_LEFT]){
-            camera.rotate(Math::Quaternion::Euler(0,CAM_SENSI * deltaTime,0));
-        }
-
-        if(keyCodes[GLFW_KEY_RIGHT]){
-            camera.rotate(Math::Quaternion::Euler(0,-CAM_SENSI * deltaTime,0));
-        }
-
-        if(keyCodes[GLFW_KEY_Q]){
-            camera.rotate(Math::Quaternion::Euler(0,0,CAM_SENSI * deltaTime));
-        }
-
-        if(keyCodes[GLFW_KEY_E]){
-            camera.rotate(Math::Quaternion::Euler(0,0,-CAM_SENSI * deltaTime));
-        }
-
+        processControls(window, &camera, deltaTime);
 
         //meshes[0].rotateAroundAnAxis({0,0,0}, Math::Quaternion::Euler(0, M_PI * deltaTime, 0));
 
-        meshes[1].rotate(Math::Quaternion::Euler(M_PI * deltaTime, 0, 0));
+        //meshes[1].rotate(Math::Quaternion::Euler(M_PI * deltaTime, 0, 0));
 
-        meshes[2].rotateAroundAnAxis({0,0,0},Math::Quaternion::Euler(M_PI * deltaTime, M_PI * deltaTime, M_PI * deltaTime));
+        //meshes[2].rotateAroundAnAxis({0,0,0},Math::Quaternion::Euler(M_PI * deltaTime, M_PI * deltaTime, M_PI * deltaTime));
 
-        meshes[3].rotateAroundAnAxis(meshes[1].position, Math::Quaternion::Euler(0, 0,  M_PI * deltaTime));
+        //meshes[3].rotateAroundAnAxis(meshes[1].position, Math::Quaternion::Euler(0, 0,  M_PI * deltaTime));
 
-        light.rotateAroundAnAxis({0,0,0}, Math::Quaternion::Euler(0, -M_PI * deltaTime * 5, 0) );
+        //light.rotateAroundAnAxis({0,0,0}, Math::Quaternion::Euler(0, -M_PI * deltaTime * 5, 0) );
 
         app.render(window, meshes, meshCount, camera, light);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
-
 
         end = std::chrono::system_clock::now();
         deltaTime = (end - start).count() / 1000000000.0f;
@@ -254,7 +198,7 @@ int main(void) {
     delete mesh;
     delete mesh2;
     delete mesh3;
-    delete mesh4;
+    //delete mesh4;
 
     app.deinitialize(meshes, meshCount);
 
