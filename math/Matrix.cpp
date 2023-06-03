@@ -142,11 +142,12 @@ namespace Math{
 
     Matrix4_4 Matrix4_4::operator*=(const Matrix4_4& m) {
 
+        auto temp = Matrix4_4(*this);
         for(int i = 0; i < 4; i++){
             for(int j = 0; j < 4; j++){
                 double value = 0;
                 for(int k = 0; k < 4; k++){
-                    value += matrix[i][k] * m.get(k,j);
+                    value += temp.get(i,k) * m.get(k,j);
                 }
                 set(value, i, j);
             }

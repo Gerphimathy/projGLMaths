@@ -42,7 +42,7 @@ namespace ThreeD {
 
     void ThreeDObject::rotate(const Math::Quaternion q){
         rotation *= q;
-        rotation.Normalize();
+        //rotation.Normalize();
     }
 
     void ThreeDObject::rotateByAxisAndAngle(const Math::Vector3 u, const double angle){

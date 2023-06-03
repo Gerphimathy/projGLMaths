@@ -85,8 +85,6 @@ void main(void)
 
 	currentPos = u_viewMatrix * currentPos;
 
-
-	//à modifier en vrai là
 	gl_Position = u_projectionMatrix * currentPos;
 
 

@@ -145,10 +145,10 @@ namespace Math{
 
     Matrix4_4 Quaternion::ToMatrix() const{
         std::array<std::array<double, 4>,4> m = std::array<std::array<double, 4>,4>();
-        m[0] = { 1 - 2*j*j - 2*k*k, 2*i*j - 2*k*s         , 2*i*k + 2*j*s        , 0. };
-        m[1] = { 2*i*j + 2*k*s        , 1 - 2*i*i - 2*k*k , 2*j*k -  2*i*s       , 0. };
-        m[2] = { 2*i*k - 2*j*s        , 2*j*k + 2*i*s         , 1 - 2*i*i - 2*j*j, 0. };
-        m[3] = {0., 0., 0., 1.};
+        m[0] = { 1 - 2*j*j - 2*k*k    , 2*i*j - 2*k*s         , 2*i*k + 2*j*s        , 0. };
+        m[1] = { 2*i*j + 2*k*s        , 1 - 2*i*i - 2*k*k     , 2*j*k -  2*i*s       , 0. };
+        m[2] = { 2*i*k - 2*j*s        , 2*j*k + 2*i*s         , 1 - 2*i*i - 2*j*j    , 0. };
+        m[3] = { 0.                   , 0.                    , 0.                   , 1. };
         return Matrix4_4(m);
     }
 

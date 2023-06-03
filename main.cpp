@@ -99,7 +99,7 @@ int main(void) {
     mesh->name = "Dragon";
     mesh->position = {0, 0, 20};
     mesh->rotation = Math::Quaternion::Euler({0, 0, 0});
-    mesh->scale = {1, 1, 1};
+    mesh->scale = {1, 1,1};
 
     auto* mesh2 = new ThreeD::Mesh();
     loadObjMesh(mesh2, "./TestObjects/cube.obj", "./TestObjects/materials/");
@@ -175,15 +175,15 @@ int main(void) {
 
         processControls(window, camera, deltaTime);
 
-        //meshes[0].rotateAroundAnAxis({0,0,0}, Math::Quaternion::Euler(0, M_PI * deltaTime, 0));
+        meshes[0].rotateAroundAnAxis({0,0,0}, Math::Quaternion::Euler(0, M_PI * deltaTime, 0));
 
         meshes[1].rotate(Math::Quaternion::Euler(M_PI * deltaTime, 0, 0));
 
-        //meshes[2].rotateAroundAnAxis({0,0,0},Math::Quaternion::Euler(M_PI * deltaTime, M_PI * deltaTime, M_PI * deltaTime));
+        meshes[2].rotateAroundAnAxis({0,0,0},Math::Quaternion::Euler(M_PI * deltaTime, M_PI * deltaTime, M_PI * deltaTime));
 
-        //meshes[3].rotateAroundAnAxis(meshes[1].position, Math::Quaternion::Euler(0, 0,  M_PI * deltaTime));
+        meshes[3].rotateAroundAnAxis(meshes[1].position, Math::Quaternion::Euler(0, 0,  M_PI * deltaTime));
 
-        //light.rotateAroundAnAxis({0,0,0}, Math::Quaternion::Euler(0, -M_PI * deltaTime * 5, 0) );
+        light.rotateAroundAnAxis({0,0,0}, Math::Quaternion::Euler(0, -M_PI * deltaTime, 0) );
 
         app.render(window, meshes, meshCount, camera, light);
 

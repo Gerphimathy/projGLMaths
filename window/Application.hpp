@@ -120,9 +120,10 @@ namespace Window {
                 scalMat.set(scal.z, 2, 2);
 
                 Math::Matrix4_4 worldMat = Math::Matrix4_4();
-                worldMat *= scalMat;
-                worldMat *= rotMat;
-                worldMat *= posMat;
+                worldMat = scalMat * worldMat;
+                worldMat = rotMat * worldMat;
+                worldMat = posMat * worldMat;
+
 
                 const auto WORLD_MAT = glGetUniformLocation(program, "u_worldMatrix");
                 glUniformMatrix4fv(WORLD_MAT, 1, GL_FALSE, worldMat.ToArray().data());
