@@ -40,7 +40,7 @@ add_executable(
         loader/loadMesh.h
         loader/stb_image.h
 
-        ThreeD/Camera.cpp ThreeD/Camera.h ThreeD/ThreeDObject.cpp ThreeD/ThreeDObject.h ThreeD/Light.cpp ThreeD/Light.h ThreeD/Polygon.hpp window/Controls.hpp)
+        ThreeD/Camera.cpp ThreeD/Camera.h ThreeD/ThreeDObject.cpp ThreeD/ThreeDObject.h ThreeD/Light.cpp ThreeD/Light.h window/Controls.hpp)
 
 
 target_link_libraries(math glfw3 ${OPENGL_gl_LIBRARY} glew32)
