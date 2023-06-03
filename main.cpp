@@ -183,7 +183,7 @@ int main(void) {
 
         //meshes[3].rotateAroundAnAxis(meshes[1].position, Math::Quaternion::Euler(0, 0,  M_PI * deltaTime));
 
-        //light.rotateAroundAnAxis({0,0,0}, Math::Quaternion::Euler(0, -M_PI * deltaTime * 5, 0) );
+        light.rotateAroundAnAxis({0,0,0}, Math::Quaternion::Euler(0, -M_PI * deltaTime * 5, 0) );
 
         app.render(window, meshes, meshCount, camera, light);
 

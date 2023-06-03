@@ -1,7 +1,3 @@
-//
-// Created by Mathis on 20/05/2023.
-//
-
 #pragma once
 #include "../math/Vector3.hpp"
 #include "../math/Vector2.hpp"
