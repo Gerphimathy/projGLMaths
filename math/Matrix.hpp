@@ -44,6 +44,7 @@ namespace Math{
 
             Matrix4_4 operator-(const Matrix4_4& m) const;
             Matrix4_4 operator-=(const Matrix4_4& m);
+            Matrix4_4 operator-() const;
 
             Matrix4_4 operator*(const Matrix4_4& m) const;
             Matrix4_4 operator*=(const Matrix4_4& m);
@@ -66,5 +67,7 @@ namespace Math{
         static Matrix4_4 FromArray(std::array<float, 16>);
 
         Matrix4_4& operator=(const std::array<float, 16>);
+
+        Matrix4_4 Transpose();
     };
 }

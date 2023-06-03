@@ -7,13 +7,20 @@ in vec2 a_texCoord;
 uniform float u_usetexture;
 out float f_usetexture;
 
-
+/*
 uniform vec3 u_scale;
 uniform vec3 u_meshPosition;
 uniform vec4 u_meshRotation;
+*/
+
+uniform mat4 u_worldMatrix;
 uniform mat4 u_projectionMatrix;
+/*
 uniform vec3 camPos;
 uniform vec4 camRot;
+*/
+
+uniform mat4 u_viewMatrix;
 
 
 out vec2 f_texCoords;
@@ -56,22 +63,31 @@ void main(void)
 
 	//Output to fragment shader
 	f_texCoords = a_texCoord;
-	f_normal = rotate(u_meshRotation, a_normal);
-	v_camPos = camPos;
+	f_normal = mat3(u_worldMatrix) * a_normal;
+	v_camPos = u_viewMatrix[3].xyz;
 
 
 	//Calculate position
+	/*
 	vec3 machin = vec3(
 	a_position.x * u_scale.x,
 	a_position.y * u_scale.y,
 	a_position.z * u_scale.z
 	);
+
 	machin = rotate(u_meshRotation, machin);
 	machin += u_meshPosition;
-	FragPos = machin;
-	machin -= camPos;
-	machin = rotate(camRot, machin);
-	gl_Position = u_projectionMatrix * vec4(machin, 1);
+	*/
+
+	vec4 currentPos = u_worldMatrix * vec4(a_position, 1);
+
+	FragPos = currentPos.xyz;
+
+	currentPos = u_viewMatrix * currentPos;
+
+
+	//à modifier en vrai là
+	gl_Position = u_projectionMatrix * currentPos;
 
 
 }

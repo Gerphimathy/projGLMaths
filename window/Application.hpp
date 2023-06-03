@@ -90,6 +90,9 @@ namespace Window {
                 //TRANSFORM
                 // une matrice OpenGL est definie en COLONNE
 
+
+                /*
+
                 const auto MESH_ROT = glGetUniformLocation(program, "u_meshRotation");
                 glUniform4f(MESH_ROT, meshes[i].rotation.getI(), meshes[i].rotation.getJ(), meshes[i].rotation.getK(), meshes[i].rotation.getS());
                 GLReportError("Mesh Rotation");
@@ -102,6 +105,29 @@ namespace Window {
                 glUniform3f(MESH_SCAL, meshes[i].scale.getX(), meshes[i].scale.getY(), meshes[i].scale.getZ());
                 GLReportError("Mesh Scale");
 
+                */
+
+                const Math::Matrix4_4 rotMat = meshes[i].rotation.ToMatrix();
+                Math::Matrix4_4 posMat = Math::Matrix4_4();
+                const Math::Vector3 pos = meshes[i].position;
+                posMat.set(pos.x, 0, 3);
+                posMat.set(pos.y, 1, 3);
+                posMat.set(pos.z, 2, 3);
+                Math::Matrix4_4 scalMat = Math::Matrix4_4();
+                const Math::Vector3 scal = meshes[i].scale;
+                scalMat.set(scal.x, 0, 0);
+                scalMat.set(scal.y, 1, 1);
+                scalMat.set(scal.z, 2, 2);
+
+                Math::Matrix4_4 worldMat = Math::Matrix4_4();
+                worldMat *= scalMat;
+                worldMat *= rotMat;
+                worldMat *= posMat;
+
+                const auto WORLD_MAT = glGetUniformLocation(program, "u_worldMatrix");
+                glUniformMatrix4fv(WORLD_MAT, 1, GL_FALSE, worldMat.ToArray().data());
+
+
 
                 //CAMERA
 
@@ -111,6 +137,7 @@ namespace Window {
                 glUniformMatrix4fv(PROJ_MAT, 1, GL_FALSE, camera.projectionMatrix.ToArray().data());
                 GLReportError("Projection Matrix");
 
+                /*
 
                 const auto CAM_TRANS = glGetUniformLocation(program, "camPos");
                 glUniform3f(CAM_TRANS, camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
@@ -119,6 +146,17 @@ namespace Window {
                 const auto CAM_ROT = glGetUniformLocation(program, "camRot");
                 glUniform4f(CAM_ROT, -camera.getRotation().getI(), -camera.getRotation().getJ(), -camera.getRotation().getK(), camera.getRotation().getS());
                 GLReportError("Camera Rotation");
+
+                 */
+
+                const auto VIEW_MAT = glGetUniformLocation(program, "u_viewMatrix");
+                Math::Matrix4_4 camPosMat = Math::Matrix4_4();
+                Math::Vector3 camPos = camera.position;
+                camPosMat.set(-(camPos.x), 0, 3);
+                camPosMat.set(-(camPos.y), 1, 3);
+                camPosMat.set(-(camPos.z), 2, 3);
+                const Math::Matrix4_4 viewMat = camera.rotation.ToMatrix().Transpose() * camPosMat;
+                glUniformMatrix4fv(VIEW_MAT, 1, GL_FALSE, viewMat.ToArray().data());
 
                 //Texture
                 const auto TEX_COORD = glGetAttribLocation(program,"a_texCoord");

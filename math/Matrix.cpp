@@ -130,8 +130,17 @@ namespace Math{
         return result;
     }
 
+    Matrix4_4 Matrix4_4::operator-() const {
+        Matrix4_4 result = *this;
+        for(int i = 0; i < 3; ++i){
+            for(int j = 0; j < 3; ++j){
+                result.set(-result.get(i,j), i, j);
+            }
+        }
+        return result;
+    }
+
     Matrix4_4 Matrix4_4::operator*=(const Matrix4_4& m) {
-        Matrix4_4 result;
 
         for(int i = 0; i < 4; i++){
             for(int j = 0; j < 4; j++){
@@ -139,11 +148,13 @@ namespace Math{
                 for(int k = 0; k < 4; k++){
                     value += matrix[i][k] * m.get(k,j);
                 }
-                result.set(value, i, j);
+                set(value, i, j);
             }
         }
 
-        return result;
+
+
+        return *this;
     }
 
     Matrix4_4 Matrix4_4::operator*(const Matrix4_4& m) const {
@@ -298,6 +309,15 @@ namespace Math{
      * |        Functions         |
      * |                          |
      */
+
+    Matrix4_4 Matrix4_4::Transpose(){
+        Matrix4_4 mat = Matrix4_4();
+        for(int i = 0; i < 4; ++i)
+            for (int j = 0; j < 4; ++j)
+                mat.set(get(i, j), j, i);
+
+        return mat;
+    }
 
 
 

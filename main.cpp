@@ -115,7 +115,7 @@ int main(void) {
     mesh3->position = {-4,0,10};
     mesh3->rotation = Math::Quaternion::Euler({0, 0, 0});
 
-    /*
+
     auto* mesh4 = new ThreeD::Mesh();
     loadObjMesh(mesh4, "./TestObjects/borne_darcade_Pacman.obj", "./TestObjects/materials/");
     mesh4->shader = basicShader;
@@ -129,7 +129,7 @@ int main(void) {
 
     mesh4->position = {0, -5, 10};
     mesh4->rotation = Math::Quaternion::Euler({0, 0, 0});
-    */
+
 
     ThreeD::Camera camera = ThreeD::Camera();
 
@@ -156,13 +156,13 @@ int main(void) {
     light.specular = Math::Vector3(1.0f, 1.0f, 1.0f);
     light.color = Math::Vector3(1.0f, 1.0f, 1.0f);
 
-    int meshCount = 3;
+    int meshCount = 4;
     auto* meshes = new ThreeD::Mesh[meshCount];
 
     meshes[0] = *mesh;
     meshes[1] = *mesh2;
     meshes[2] = *mesh3;
-    //meshes[3] = *mesh4;
+    meshes[3] = *mesh4;
 
     std::chrono::time_point<std::chrono::system_clock> start, end;
 
@@ -173,17 +173,17 @@ int main(void) {
 
         start = std::chrono::system_clock::now();
 
-        processControls(window, &camera, deltaTime);
+        processControls(window, camera, deltaTime);
 
         //meshes[0].rotateAroundAnAxis({0,0,0}, Math::Quaternion::Euler(0, M_PI * deltaTime, 0));
 
-        //meshes[1].rotate(Math::Quaternion::Euler(M_PI * deltaTime, 0, 0));
+        meshes[1].rotate(Math::Quaternion::Euler(M_PI * deltaTime, 0, 0));
 
         //meshes[2].rotateAroundAnAxis({0,0,0},Math::Quaternion::Euler(M_PI * deltaTime, M_PI * deltaTime, M_PI * deltaTime));
 
         //meshes[3].rotateAroundAnAxis(meshes[1].position, Math::Quaternion::Euler(0, 0,  M_PI * deltaTime));
 
-        light.rotateAroundAnAxis({0,0,0}, Math::Quaternion::Euler(0, -M_PI * deltaTime * 5, 0) );
+        //light.rotateAroundAnAxis({0,0,0}, Math::Quaternion::Euler(0, -M_PI * deltaTime * 5, 0) );
 
         app.render(window, meshes, meshCount, camera, light);
 
@@ -198,7 +198,7 @@ int main(void) {
     delete mesh;
     delete mesh2;
     delete mesh3;
-    //delete mesh4;
+    delete mesh4;
 
     app.deinitialize(meshes, meshCount);
 
