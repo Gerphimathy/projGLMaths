@@ -11,8 +11,8 @@
 #include "../math/Vector3.hpp"
 
 
-std::list<Math::Vector2> compToVec2(const std::vector<float>& components) {
-    auto vectors = std::list<Math::Vector2>();
+std::vector<Math::Vector2> compToVec2(const std::vector<float>& components) {
+    auto vectors = std::vector<Math::Vector2>();
 
     for(int i = 0; i < components.size(); i+=2) {
         vectors.emplace_back(
@@ -24,8 +24,8 @@ std::list<Math::Vector2> compToVec2(const std::vector<float>& components) {
     return vectors;
 }
 
-std::list<Math::Vector3> compToVec3(const std::vector<float>& components) {
-    auto vectors = std::list<Math::Vector3>();
+std::vector<Math::Vector3> compToVec3(const std::vector<float>& components) {
+    auto vectors = std::vector<Math::Vector3>();
 
     for(int i = 0; i < components.size(); i+=3) {
         vectors.emplace_back(
@@ -63,34 +63,30 @@ void loadObjMesh(ThreeD::Mesh* output , const char* inputFile, const char* mater
         exit(1);
     }
 
-    std::list<Math::Vector3> positions = compToVec3(attrib.vertices);
-    std::list<Math::Vector3> normals = compToVec3(attrib.normals);
-    std::list<Math::Vector2> texcoords = compToVec2(attrib.texcoords);
+    std::vector<Math::Vector3> positions = compToVec3(attrib.vertices);
+    std::vector<Math::Vector3> normals = compToVec3(attrib.normals);
+    std::vector<Math::Vector2> texcoords = compToVec2(attrib.texcoords);
 
-    output->vertexCount = attrib.vertices.size()/3;
+    output->vertexCount = 0;
+    output->indicesCount = 0;
+    for(auto shape = shapes.begin(); shape < shapes.end(); ++shape){
+        output->vertexCount += shape->mesh.indices.size();
+        output->indicesCount += shape->mesh.indices.size();
+    }
     output->vertices = new ThreeD::Vertex[output->vertexCount];
-
-    for (int i = 0; i < output->vertexCount; ++i) {
-        Math::Vector3 position = positions.front();
-        output->vertices[i].position = {position.x, position.y, position.z};
-        positions.pop_front();
-
-        Math::Vector3 normal = normals.front();
-        output->vertices[i].normal = {normal.x, normal.y, normal.z};
-        normals.pop_front();
-
-        Math::Vector2 texcoord = texcoords.front();
-        output->vertices[i].texcoords = {texcoord.x, texcoord.y};
-        texcoords.pop_front();
-    }
-
-    output->indicesCount = shapes[0].mesh.indices.size();
     output->indices = new uint16_t [output->indicesCount];
-    for (int i = 0; i < output->indicesCount; ++i) {
-        output->indices[i] = shapes[0].mesh.indices[i].vertex_index;
+
+    int vertexIndex = 0;
+    for(auto shape = shapes.begin(); shape < shapes.end(); ++shape){
+        for(auto index = shape->mesh.indices.begin(); index < shape->mesh.indices.end(); ++index){
+            output->vertices[vertexIndex].position = positions[index->vertex_index];
+            output->vertices[vertexIndex].normal = normals[index->normal_index];
+            output->vertices[vertexIndex].texcoords = texcoords[index->texcoord_index];
+            output->indices[vertexIndex] = vertexIndex;
+            vertexIndex++;
+        }
     }
 
-    //TODO: Mono material
     for (auto mat = objmaterials.begin(); mat < objmaterials.end(); ++mat) {
         output->material.ambient = Math::Vector3(mat->ambient[0], mat->ambient[1], mat->ambient[2]);
         output->material.diffuse = Math::Vector3(mat->diffuse[0], mat->diffuse[1], mat->diffuse[2]);
