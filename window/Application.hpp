@@ -43,8 +43,7 @@ namespace Window {
             return true;
         }
 
-        void deinitialize(ThreeD::Mesh* meshes, uint32_t meshCount)
-        {
+        void deinitialize(ThreeD::Mesh* meshes, uint32_t meshCount){
             for (int i = 0; i < meshCount; ++i) {
                 meshes[i].shader->Destroy();
                 delete [] meshes[i].vertices;

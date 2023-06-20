@@ -99,15 +99,15 @@ void loadObjMesh(ThreeD::Mesh* output , const char* inputFile, const char* mater
     for(auto shape = shapes.begin(); shape < shapes.end(); ++shape){
         output->triangleCount += shape->mesh.num_face_vertices.size();
     }
-    std::cout << "Triangle count: " << output->triangleCount << std::endl;
+    if(verbose) std::cout << "Triangle count: " << output->triangleCount << std::endl;
     output->triangles = new ThreeD::Triangle[output->triangleCount];
 
     int triangleIndex = 0;
     for(auto shape = shapes.begin(); shape < shapes.end(); ++shape){
         for(auto triangle = shape->mesh.num_face_vertices.begin(); triangle < shape->mesh.num_face_vertices.end(); ++triangle){
             if(*triangle != 3){
-                std::cout << "Error: non-triangle face detected" << std::endl;
-                exit(1);
+                std::cerr << "Non-triangle face detected" << std::endl;
+                exit(-1);
             }
             //Get the indices for the triangle
             for(int i = 0; i < 3; i++){

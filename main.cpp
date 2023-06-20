@@ -80,6 +80,43 @@ int main(void) {
     );
     basicShader->Create();
 
+    /*
+    auto* mesh = new ThreeD::Mesh();
+    mesh->CastFromArray(DragonVertices, sizeof(DragonVertices) / sizeof(DragonVertices[0]));
+    mesh->indices = DragonIndices;
+    mesh->indicesCount = sizeof(DragonIndices) / sizeof(DragonIndices[0]);
+    mesh->shader = basicShader;
+    mesh->material = ThreeD::Material();
+    mesh->material.diffuse = Math::Vector3(0.07568f, 0.61424f, 0.07568f);
+    mesh->material.ambient = Math::Vector3(0.0215f, 0.1745f, 0.0215f);
+    mesh->material.specular = Math::Vector3(0.633f, 0.727811f,0.633f);
+    mesh->material.shininess =  250.f;
+    mesh->name = "Dragon";
+    mesh->position = {0, 0, 20};
+    mesh->rotation = Math::Quaternion::Euler({0, 0, 0});
+    mesh->scale = {1, 1,1};
+    */
+
+    bool verbose = true;
+
+    int meshCount = 2;
+    auto* meshes = new ThreeD::Mesh[meshCount];
+
+    auto* mesh = new ThreeD::Mesh();
+    loadObjMesh(mesh, "./TestObjects/Structure-Boite-de-nuit.obj", "./TestObjects/materials/", verbose);
+    mesh->shader = basicShader;
+    mesh->name = "Structure";
+    mesh->position = {0,0,0};
+
+    auto* mesh2 = new ThreeD::Mesh();
+    loadObjMesh(mesh2, "./TestObjects/Props-Boite-de-nuit.obj", "./TestObjects/materials/", verbose);
+    mesh2->shader = basicShader;
+    mesh2->name = "Props";
+    mesh2->position = {0,0,0};
+
+    meshes[0] = *mesh;
+    meshes[1] = *mesh2;
+
     ThreeD::Camera camera = ThreeD::Camera();
 
 
@@ -105,9 +142,6 @@ int main(void) {
     light.specular = Math::Vector3(1.0f, 1.0f, 1.0f);
     light.color = Math::Vector3(1.0f, 1.0f, 1.0f);
 
-    int meshCount = 2;
-    auto* meshes = new ThreeD::Mesh[meshCount];
-
     std::chrono::time_point<std::chrono::system_clock> start, end;
 
     float deltaTime = 0;
@@ -118,7 +152,7 @@ int main(void) {
 
         processControls(window, camera, deltaTime);
 
-        app.render(window, meshes, meshCount, camera, light);
+        app.render(window, meshes, meshCount, camera, light, true);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -129,6 +163,9 @@ int main(void) {
     }
 
     app.deinitialize(meshes, meshCount);
+
+    delete[] meshes;
+    delete basicShader;
 
     glfwTerminate();
     return 0;
