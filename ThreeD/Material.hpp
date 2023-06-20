@@ -10,5 +10,14 @@ namespace ThreeD {
         float shininess;
 
         Texture* texture;
+
+        Material(){
+            texture = nullptr;
+            ambient = Math::Vector3(0.0f, 0.0f, 0.0f);
+            diffuse = Math::Vector3(0.0f, 0.0f, 0.0f);
+            specular = Math::Vector3(0.0f, 0.0f, 0.0f);
+
+            shininess = 0.0f;
+        }
     };
 }

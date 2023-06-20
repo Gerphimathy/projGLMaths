@@ -47,9 +47,15 @@ namespace Window {
         {
             for (int i = 0; i < meshCount; ++i) {
                 meshes[i].shader->Destroy();
-                if (meshes[i].material.texture) {
-                    glDeleteTextures(1, &meshes[i].material.texture->id);
+                delete [] meshes[i].vertices;
+                delete [] meshes[i].normals;
+                delete [] meshes[i].uvs;
+                delete [] meshes[i].triangles;
+                for (int j = 0; j < meshes[i].materialCount; ++j) {
+                    if (meshes[i].materials[j].texture)
+                        glDeleteTextures(1, &meshes[i].materials[j].texture->id);
                 }
+                delete [] meshes[i].materials;
             }
         }
 
@@ -86,26 +92,8 @@ namespace Window {
                 glUniform1f(TIME, time);
                 GLReportError("Time");
 
-
                 //TRANSFORM
                 // une matrice OpenGL est definie en COLONNE
-
-
-                /*
-
-                const auto MESH_ROT = glGetUniformLocation(program, "u_meshRotation");
-                glUniform4f(MESH_ROT, meshes[i].rotation.getI(), meshes[i].rotation.getJ(), meshes[i].rotation.getK(), meshes[i].rotation.getS());
-                GLReportError("Mesh Rotation");
-
-                const auto MESH_POS = glGetUniformLocation(program, "u_meshPosition");
-                glUniform3f(MESH_POS, meshes[i].position.getX(), meshes[i].position.getY(), meshes[i].position.getZ());
-                GLReportError("Mesh Position");
-
-                const auto MESH_SCAL = glGetUniformLocation(program, "u_scale");
-                glUniform3f(MESH_SCAL, meshes[i].scale.getX(), meshes[i].scale.getY(), meshes[i].scale.getZ());
-                GLReportError("Mesh Scale");
-
-                */
 
                 const Math::Matrix4_4 rotMat = meshes[i].rotation.ToMatrix();
                 Math::Matrix4_4 posMat = Math::Matrix4_4();
@@ -131,9 +119,6 @@ namespace Window {
 
 
                 //CAMERA
-
-
-
                 const auto PROJ_MAT = glGetUniformLocation(program, "u_projectionMatrix");
                 glUniformMatrix4fv(PROJ_MAT, 1, GL_FALSE, camera.projectionMatrix.ToArray().data());
                 GLReportError("Projection Matrix");
@@ -158,39 +143,6 @@ namespace Window {
                 camPosMat.set(-(camPos.z), 2, 3);
                 const Math::Matrix4_4 viewMat = camera.rotation.ToMatrix().Transpose() * camPosMat;
                 glUniformMatrix4fv(VIEW_MAT, 1, GL_FALSE, viewMat.ToArray().data());
-
-                //Texture
-                const auto TEX_COORD = glGetAttribLocation(program,"a_texCoord");
-                glEnableVertexAttribArray(TEX_COORD);
-                glVertexAttribPointer(TEX_COORD, 2, GL_DOUBLE, GL_FALSE, stride, &meshes[i].vertices->texcoords);
-                GLReportError("Texture Coordinates");
-
-                float texFlag = (meshes[i].material.texture != nullptr) ? 1.0f : 0.0f;
-                const auto USE_TEXTURE = glGetUniformLocation(program, "u_usetexture");
-                glUniform1f(USE_TEXTURE, texFlag);
-                GLReportError("Use Texture");
-
-                if(meshes[i].material.texture != nullptr){
-                    glActiveTexture(GL_TEXTURE0);
-                    glBindTexture(GL_TEXTURE_2D, meshes[i].material.texture->id);
-
-                    const auto TEXTURE = glGetUniformLocation(program, "u_texture");
-                    glUniform1i(TEXTURE, 0);
-
-                    GLReportError("Texture");
-                }
-
-                //VERTEX
-                const auto POSITION = glGetAttribLocation(program,"a_position");
-                glEnableVertexAttribArray(POSITION);
-                glVertexAttribPointer(POSITION, 3, GL_DOUBLE, GL_FALSE, stride, &meshes[i].vertices->position);
-                GLReportError("Vertex Position");
-
-                const auto NORMAL = glGetAttribLocation(program,"a_normal");
-                glEnableVertexAttribArray(NORMAL);
-                glVertexAttribPointer(NORMAL, 3, GL_DOUBLE, GL_FALSE, stride, &meshes[i].vertices->normal);
-                GLReportError("Vertex Normal");
-
 
                 //LIGHT
                 auto* lightPosition = new GLfloat[3] {(float) light.position.x, (float) light.position.y, (float) light.position.z};
@@ -218,30 +170,77 @@ namespace Window {
                 glUniform3fv(LIGHT_COLOR, 1, lightColor);
                 GLReportError("Light Color");
 
-                //MATERIAL
-                auto* materialAmbient = new GLfloat[3] {(float) meshes[i].material.ambient.x, (float) meshes[i].material.ambient.y, (float) meshes[i].material.ambient.z};
-                const auto MATERIAL_AMBIENT = glGetUniformLocation(program,"u_material.ambient");
-                glUniform3fv(MATERIAL_AMBIENT, 1, materialAmbient);
-                GLReportError("Material Ambient");
 
-                auto* materialDiffuse = new GLfloat[3] {(float) meshes[i].material.diffuse.x, (float) meshes[i].material.diffuse.y, (float) meshes[i].material.diffuse.z};
-                const auto MATERIAL_DIFFUSE = glGetUniformLocation(program,"u_material.diffuse");
-                glUniform3fv(MATERIAL_DIFFUSE, 1, materialDiffuse);
-                GLReportError("Material Diffuse");
+                //Face by Face
+                for (int j = 0; j < meshes[i].triangleCount; ++j) {
+                    //Create Vertices Array using triangles indices
+                    ThreeD::Vertex vertices[3];
+                    for (int k = 0; k < 3; ++k) {
+                        vertices[k].position = meshes[i].vertices[meshes[i].triangles[j].vertex_indices[k]];
+                        vertices[k].normal = meshes[i].normals[meshes[i].triangles[j].normal_indices[k]];
+                        vertices[k].texcoords = meshes[i].uvs[meshes[i].triangles[j].uv_indices[k]];
+                    }
 
-                auto* materialSpecular = new GLfloat[3] {(float) meshes[i].material.specular.x, (float) meshes[i].material.specular.y, (float) meshes[i].material.specular.z};
-                const auto MATERIAL_SPECULAR = glGetUniformLocation(program,"u_material.specular");
-                glUniform3fv(MATERIAL_SPECULAR, 1, materialSpecular);
-                GLReportError("Material Specular");
+                    //VERTEX
+                    const auto POSITION = glGetAttribLocation(program,"a_position");
+                    glEnableVertexAttribArray(POSITION);
+                    glVertexAttribPointer(POSITION, 3, GL_DOUBLE, GL_FALSE, stride, &vertices->position);
+                    GLReportError("Vertex Position");
 
-                const auto MATERIAL_SHININESS = glGetUniformLocation(program,"u_material.shininess");
-                glUniform1f(MATERIAL_SHININESS, meshes[i].material.shininess);
-                GLReportError("Material Shininess");
+                    const auto NORMAL = glGetAttribLocation(program,"a_normal");
+                    glEnableVertexAttribArray(NORMAL);
+                    glVertexAttribPointer(NORMAL, 3, GL_DOUBLE, GL_FALSE, stride, &vertices->normal);
+                    GLReportError("Vertex Normal");
 
-                //DRAW
-                glDrawElements(GL_TRIANGLES, meshes[i].indicesCount, GL_UNSIGNED_SHORT, meshes[i].indices);
-                GLReportError("Draw");
+                    const auto TEX_COORD = glGetAttribLocation(program,"a_texCoord");
+                    glEnableVertexAttribArray(TEX_COORD);
+                    glVertexAttribPointer(TEX_COORD, 2, GL_DOUBLE, GL_FALSE, stride, &vertices->texcoords);
+                    GLReportError("Texture Coordinates");
 
+                    uint32_t materialIndex = meshes[i].triangles[j].material_index;
+                    ThreeD::Material material = meshes[i].materials[materialIndex];
+
+                    //MATERIAL
+                    auto* materialAmbient = new GLfloat[3]{(float) material.ambient.x, (float) material.ambient.y, (float) material.ambient.z};
+                    const auto MATERIAL_AMBIENT = glGetUniformLocation(program,"u_material.ambient");
+                    glUniform3fv(MATERIAL_AMBIENT, 1, materialAmbient);
+                    GLReportError("Material Ambient");
+
+                    auto* materialDiffuse = new GLfloat[3] {(float) material.diffuse.x, (float) material.diffuse.y, (float) material.diffuse.z};
+                    const auto MATERIAL_DIFFUSE = glGetUniformLocation(program,"u_material.diffuse");
+                    glUniform3fv(MATERIAL_DIFFUSE, 1, materialDiffuse);
+                    GLReportError("Material Diffuse");
+
+                    auto* materialSpecular = new GLfloat[3] {(float) material.specular.x, (float) material.specular.y, (float) material.specular.z};
+                    const auto MATERIAL_SPECULAR = glGetUniformLocation(program,"u_material.specular");
+                    glUniform3fv(MATERIAL_SPECULAR, 1, materialSpecular);
+                    GLReportError("Material Specular");
+
+                    const auto MATERIAL_SHININESS = glGetUniformLocation(program,"u_material.shininess");
+                    glUniform1f(MATERIAL_SHININESS, material.shininess);
+                    GLReportError("Material Shininess");
+
+                    //Texture
+                    float texFlag = (material.texture != nullptr) ? 1.0f : 0.0f;
+                    const auto USE_TEXTURE = glGetUniformLocation(program, "u_usetexture");
+                    glUniform1f(USE_TEXTURE, texFlag);
+                    GLReportError("Use Texture");
+
+                    if(material.texture != nullptr){
+                        glActiveTexture(GL_TEXTURE0);
+                        glBindTexture(GL_TEXTURE_2D, material.texture->id);
+
+                        const auto TEXTURE = glGetUniformLocation(program, "u_texture");
+                        glUniform1i(TEXTURE, 0);
+
+                        GLReportError("Texture");
+                    }
+
+                    //DRAW
+                    glDrawArrays(GL_TRIANGLES, 0, 3);
+                    GLReportError("Draw");
+                    if (verbose) std::cerr << "Triangle Drawn" << std::endl;
+                }
                 if(verbose) std::cerr << "Mesh Drawn" << std::endl << std::endl;
             }
         }

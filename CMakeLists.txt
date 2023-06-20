@@ -26,7 +26,6 @@ add_executable(
         math/Vector3.cpp
         math/Vector3.hpp
 
-        ThreeD/Vertex.hpp
         ThreeD/Mesh.hpp
         ThreeD/Material.hpp
         ThreeD/Texture.hpp

@@ -40,68 +40,120 @@ std::vector<Math::Vector3> compToVec3(const std::vector<float>& components) {
 
 //TODO: Load material
 //See: https://github.com/canmom/rasteriser/blob/master/fileloader.cpp
-void loadObjMesh(ThreeD::Mesh* output , const char* inputFile, const char* materials_directory){
+void loadObjMesh(ThreeD::Mesh* output , const char* inputFile, const char* materials_directory, bool verbose = false){
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> objmaterials;
     std::string err;
     std::string warn;
 
-    std::cout << "Loading model: " << inputFile << std::endl;
+    if(verbose) std::cout << std::endl <<"Loading model: " << inputFile << std::endl;
     bool ret = tinyobj::LoadObj(&attrib, &shapes, &objmaterials,
                                 &warn, &err,
                                 inputFile, //model to load
                                 materials_directory, //directory to search for materials
-                        true
-                                 );
+                        true);
+    if(verbose) std::cout << ".obj loaded."<< std::endl;
 
     if (!err.empty()) { // `err` may contain warning message.
-        std::cerr << err << std::endl;
+        std::cout << err << std::endl;
     }
 
     if (!ret) {
         exit(1);
     }
 
+    if (verbose) std::cout << "Loading vertices..."<< std::endl;
+
     std::vector<Math::Vector3> positions = compToVec3(attrib.vertices);
     std::vector<Math::Vector3> normals = compToVec3(attrib.normals);
     std::vector<Math::Vector2> texcoords = compToVec2(attrib.texcoords);
 
-    output->vertexCount = 0;
-    output->indicesCount = 0;
-    for(auto shape = shapes.begin(); shape < shapes.end(); ++shape){
-        output->vertexCount += shape->mesh.indices.size();
-        output->indicesCount += shape->mesh.indices.size();
-    }
-    output->vertices = new ThreeD::Vertex[output->vertexCount];
-    output->indices = new uint16_t [output->indicesCount];
+    output->vertexCount = positions.size();
+    output->normalCount = normals.size();
+    output->uvCount = texcoords.size();
 
-    int vertexIndex = 0;
+    if(verbose) std::cout << "Loading: " << output->vertexCount << " vertices, " << output->normalCount << " normals, " << output->uvCount << " uvs" << std::endl;
+
+    output->vertices = new Math::Vector3[output->vertexCount];
+    output->normals = new Math::Vector3[output->normalCount];
+    output->uvs = new Math::Vector2[output->uvCount];
+
+    //Copy the data from the vectors to the arrays
+    for(int i = 0; i < output->vertexCount; i++){
+        output->vertices[i] = positions[i];
+    }
+
+    for(int i = 0; i < output->normalCount; i++){
+        output->normals[i] = normals[i];
+    }
+
+    for(int i = 0; i < output->uvCount; i++){
+        output->uvs[i] = texcoords[i];
+    }
+    if(verbose) std::cout << "Vertices loaded" << std::endl;
+    if(verbose) std::cout << "Loading triangles..." << std::endl;
+
+    //Count the number of triangles
+    output->triangleCount = 0;
     for(auto shape = shapes.begin(); shape < shapes.end(); ++shape){
-        for(auto index = shape->mesh.indices.begin(); index < shape->mesh.indices.end(); ++index){
-            output->vertices[vertexIndex].position = positions[index->vertex_index];
-            output->vertices[vertexIndex].normal = normals[index->normal_index];
-            output->vertices[vertexIndex].texcoords = texcoords[index->texcoord_index];
-            output->indices[vertexIndex] = vertexIndex;
-            vertexIndex++;
+        output->triangleCount += shape->mesh.num_face_vertices.size();
+    }
+    std::cout << "Triangle count: " << output->triangleCount << std::endl;
+    output->triangles = new ThreeD::Triangle[output->triangleCount];
+
+    int triangleIndex = 0;
+    for(auto shape = shapes.begin(); shape < shapes.end(); ++shape){
+        for(auto triangle = shape->mesh.num_face_vertices.begin(); triangle < shape->mesh.num_face_vertices.end(); ++triangle){
+            if(*triangle != 3){
+                std::cout << "Error: non-triangle face detected" << std::endl;
+                exit(1);
+            }
+            //Get the indices for the triangle
+            for(int i = 0; i < 3; i++){
+                tinyobj::index_t idx = shape->mesh.indices[triangleIndex*3 + i];
+                output->triangles[triangleIndex].vertex_indices[i] = idx.vertex_index;
+                output->triangles[triangleIndex].normal_indices[i] = idx.normal_index;
+                output->triangles[triangleIndex].uv_indices[i] = idx.texcoord_index;
+            }
+            output->triangles[triangleIndex].material_index = shape->mesh.material_ids[triangleIndex];
+            triangleIndex++;
         }
+        //Get material index for the face + all indices for the face
     }
+    if(verbose) std::cout << "Triangles loaded" << std::endl;
 
+    output->materialCount = objmaterials.size();
+    output->materials = new ThreeD::Material[output->materialCount];
+
+    if(verbose) std::cout << "Loading materials: " << output->materialCount << " materials" << std::endl;
+    int j = 0;
     for (auto mat = objmaterials.begin(); mat < objmaterials.end(); ++mat) {
-        output->material.ambient = Math::Vector3(mat->ambient[0], mat->ambient[1], mat->ambient[2]);
-        output->material.diffuse = Math::Vector3(mat->diffuse[0], mat->diffuse[1], mat->diffuse[2]);
-        output->material.specular = Math::Vector3(mat->specular[0], mat->specular[1], mat->specular[2]);
-        output->material.shininess = mat->shininess;
+        if(verbose) std::cout << "Loading material " << mat->name << " as material " << j << std::endl;
+        output->materials[j].ambient.x = mat->ambient[0];
+        output->materials[j].ambient.y = mat->ambient[1];
+        output->materials[j].ambient.z = mat->ambient[2];
+
+        output->materials[j].diffuse.x = mat->diffuse[0];
+        output->materials[j].diffuse.y = mat->diffuse[1];
+        output->materials[j].diffuse.z = mat->diffuse[2];
+
+        output->materials[j].specular.x = mat->specular[0];
+        output->materials[j].specular.y = mat->specular[1];
+        output->materials[j].specular.z = mat->specular[2];
+
+        output->materials[j].shininess = mat->shininess;
+        if(verbose) std::cout << "Material " << j << " loaded" << std::endl;
 
         if(!mat->diffuse_texname.empty()){
-            std::cout << "Loading texture..." << std::endl;
-            output->material.texture = new ThreeD::Texture();
-            output->material.texture->path = std::string(materials_directory) + mat->diffuse_texname;
+            if(verbose) std::cout << "Loading texture..." << std::endl;
+            output->materials[j].texture = new ThreeD::Texture();
+            output->materials[j].texture->path = std::string(materials_directory) + mat->diffuse_texname;
 
-            unsigned char* data = stbi_load(output->material.texture->path.c_str(),
-                                                       &output->material.texture->width,
-                                                       &output->material.texture->height,
-                                                       &output->material.texture->channels,
+            unsigned char* data = stbi_load(output->materials[j].texture->path.c_str(),
+                                                       &output->materials[j].texture->width,
+                                                       &output->materials[j].texture->height,
+                                                       &output->materials[j].texture->channels,
                                                        STBI_rgb_alpha);
 
             if (data){
@@ -109,7 +161,7 @@ void loadObjMesh(ThreeD::Mesh* output , const char* inputFile, const char* mater
                 glGenTextures(1, &textureId);
                 glBindTexture(GL_TEXTURE_2D, textureId);
 
-                output->material.texture->id = textureId;
+                output->materials[j].texture->id = textureId;
 
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -117,7 +169,7 @@ void loadObjMesh(ThreeD::Mesh* output , const char* inputFile, const char* mater
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
                 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8,
-                             output->material.texture->width, output->material.texture->height,
+                             output->materials[j].texture->width, output->materials[j].texture->height,
                              0, GL_RGBA, GL_UNSIGNED_BYTE,
                              data);
 
@@ -125,10 +177,17 @@ void loadObjMesh(ThreeD::Mesh* output , const char* inputFile, const char* mater
 
                 stbi_image_free(data);
 
-                std::cout << "Texture loaded: " << output->material.texture->path << std::endl;
-            }else std::cout << "Failed to load texture: " << output->material.texture->path << std::endl;
+                if(verbose) std::cout << "Texture loaded."<< std::endl;
+            }else if(verbose) std::cout << "Failed to load texture: " << output->materials[j].texture->path << std::endl;
         }
+        j++;
     }
 
-    std::cout << "Model loaded " << warn << std::endl << std::endl;
+    positions.clear();
+    normals.clear();
+    texcoords.clear();
+    shapes.clear();
+    objmaterials.clear();
+
+    if(verbose) std::cout << "Model loaded " << warn << std::endl << std::endl;
 }

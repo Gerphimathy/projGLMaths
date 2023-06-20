@@ -3,6 +3,7 @@
 #include "../shaders/GLShader.hpp"
 
 namespace ThreeD{
+    /*
     void Mesh::CastFromArray(const float* array, int size){
         vertexCount = size/8;
         vertices = new ThreeD::Vertex[vertexCount];
@@ -14,7 +15,7 @@ namespace ThreeD{
 
             vertices[i].texcoords = {array[i * 8 + 6], array[i * 8 + 7]};
         }
-    }
+    }*/
 
     void Mesh::loadShader(const char* vertexShader, const char* fragmentShader){
         shader = new GLShader();
@@ -30,13 +31,23 @@ namespace ThreeD{
     Mesh::Mesh() {
         vertices = nullptr;
         vertexCount = 0;
+
+        normals = nullptr;
+        normalCount = 0;
+
+        uvs = nullptr;
+        uvCount = 0;
+
+        triangles = nullptr;
+        triangleCount = 0;
+
+        materials = nullptr;
+        materialCount = 0;
+
         position = {0,0,0};
         rotation = Math::Quaternion::Euler(0,0,0);
         scale = {1, 1 ,1};
-        indices = nullptr;
-        indicesCount = 0;
         shader = nullptr;
-        material = Material();
 
         name="";
     }

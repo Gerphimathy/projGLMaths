@@ -187,7 +187,7 @@ namespace Math{
         return this->i*q.i + this->j*q.j + this->k*q.k + this->s*q.s;
     }
 
-    Quaternion Quaternion::Euler(const Math::Vector3& euler) {
+    [[maybe_unused]] Quaternion Quaternion::Euler(const Math::Vector3& euler) {
         return Quaternion::Euler(euler.x, euler.y, euler.z);
     }
 

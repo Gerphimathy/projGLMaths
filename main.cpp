@@ -80,57 +80,6 @@ int main(void) {
     );
     basicShader->Create();
 
-    //return 0;
-
-    /**
-      IMPORTANT: Models MUST be smooth shaded
-     * **/
-
-    auto* mesh = new ThreeD::Mesh();
-    mesh->CastFromArray(DragonVertices, sizeof(DragonVertices) / sizeof(DragonVertices[0]));
-    mesh->indices = DragonIndices;
-    mesh->indicesCount = sizeof(DragonIndices) / sizeof(DragonIndices[0]);
-    mesh->shader = basicShader;
-    mesh->material = ThreeD::Material();
-    mesh->material.diffuse = Math::Vector3(0.07568f, 0.61424f, 0.07568f);
-    mesh->material.ambient = Math::Vector3(0.0215f, 0.1745f, 0.0215f);
-    mesh->material.specular = Math::Vector3(0.633f, 0.727811f,0.633f);
-    mesh->material.shininess =  250.f;
-    mesh->name = "Dragon";
-    mesh->position = {0, 0, 20};
-    mesh->rotation = Math::Quaternion::Euler({0, 0, 0});
-    mesh->scale = {1, 1,1};
-
-    auto* mesh2 = new ThreeD::Mesh();
-    loadObjMesh(mesh2, "./TestObjects/cube.obj", "./TestObjects/materials/");
-    mesh2->shader = basicShader;
-    mesh2->name = "Cube";
-    mesh2->position = {4,0,10};
-    mesh2->rotation = Math::Quaternion::Euler({0, 0, 0});
-
-    auto* mesh3 = new ThreeD::Mesh();
-    loadObjMesh(mesh3, "./TestObjects/cube_wood.obj", "./TestObjects/materials/");
-    mesh3->shader = basicShader;
-    mesh3->name = "Cube Wood";
-    mesh3->position = {-4,0,10};
-    mesh3->rotation = Math::Quaternion::Euler({0, 0, 0});
-
-
-    auto* mesh4 = new ThreeD::Mesh();
-    loadObjMesh(mesh4, "./TestObjects/borne_darcade_Pacman.obj", "./TestObjects/materials/");
-    mesh4->shader = basicShader;
-    mesh4->name = "Borne";
-
-    mesh4->material = ThreeD::Material();
-    mesh4->material.diffuse = Math::Vector3(1, 0.7, 0.7);
-    mesh4->material.ambient = Math::Vector3(0, 0, 0);
-    mesh4->material.specular = Math::Vector3(0, 0,0);
-    mesh4->material.shininess =  20.f;
-
-    mesh4->position = {0, -5, 10};
-    mesh4->rotation = Math::Quaternion::Euler({0, 0, 0});
-
-
     ThreeD::Camera camera = ThreeD::Camera();
 
 
@@ -156,13 +105,8 @@ int main(void) {
     light.specular = Math::Vector3(1.0f, 1.0f, 1.0f);
     light.color = Math::Vector3(1.0f, 1.0f, 1.0f);
 
-    int meshCount = 4;
+    int meshCount = 2;
     auto* meshes = new ThreeD::Mesh[meshCount];
-
-    meshes[0] = *mesh;
-    meshes[1] = *mesh2;
-    meshes[2] = *mesh3;
-    meshes[3] = *mesh4;
 
     std::chrono::time_point<std::chrono::system_clock> start, end;
 
@@ -170,20 +114,9 @@ int main(void) {
 
     while (!glfwWindowShouldClose(window))
     {
-
         start = std::chrono::system_clock::now();
 
         processControls(window, camera, deltaTime);
-
-        meshes[0].rotateAroundAnAxis({0,0,0}, Math::Quaternion::Euler(0, M_PI * deltaTime, 0));
-
-        meshes[1].rotate(Math::Quaternion::Euler(M_PI * deltaTime, 0, 0));
-
-        meshes[2].rotateAroundAnAxis({0,0,0},Math::Quaternion::Euler(M_PI * deltaTime, M_PI * deltaTime, M_PI * deltaTime));
-
-        meshes[3].rotateAroundAnAxis(meshes[1].position, Math::Quaternion::Euler(0, 0,  M_PI * deltaTime));
-
-        light.rotateAroundAnAxis({0,0,0}, Math::Quaternion::Euler(0, -M_PI * deltaTime, 0) );
 
         app.render(window, meshes, meshCount, camera, light);
 
@@ -194,11 +127,6 @@ int main(void) {
         deltaTime = (end - start).count() / 1000000000.0f;
         glfwSetWindowTitle(glfwGetCurrentContext(), (title + std::to_string(1.0f / deltaTime)).c_str());
     }
-
-    delete mesh;
-    delete mesh2;
-    delete mesh3;
-    delete mesh4;
 
     app.deinitialize(meshes, meshCount);
 
