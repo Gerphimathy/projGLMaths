@@ -68,7 +68,9 @@ int main(void) {
     glfwSetKeyCallback(window, keyCallback);
 
     glfwMakeContextCurrent(window);
-    glfwSwapInterval(1);
+
+    //TODO: Trouver le bon intervasdlle pour que ça booste bien
+    //glfwSwapInterval(1);
     app.initialize();
 
     auto* basicShader = new GLShader();
@@ -79,23 +81,6 @@ int main(void) {
             "./shaders/basic/basic.fs.glsl"
     );
     basicShader->Create();
-
-    /*
-    auto* mesh = new ThreeD::Mesh();
-    mesh->CastFromArray(DragonVertices, sizeof(DragonVertices) / sizeof(DragonVertices[0]));
-    mesh->indices = DragonIndices;
-    mesh->indicesCount = sizeof(DragonIndices) / sizeof(DragonIndices[0]);
-    mesh->shader = basicShader;
-    mesh->material = ThreeD::Material();
-    mesh->material.diffuse = Math::Vector3(0.07568f, 0.61424f, 0.07568f);
-    mesh->material.ambient = Math::Vector3(0.0215f, 0.1745f, 0.0215f);
-    mesh->material.specular = Math::Vector3(0.633f, 0.727811f,0.633f);
-    mesh->material.shininess =  250.f;
-    mesh->name = "Dragon";
-    mesh->position = {0, 0, 20};
-    mesh->rotation = Math::Quaternion::Euler({0, 0, 0});
-    mesh->scale = {1, 1,1};
-    */
 
     bool verbose = true;
 
@@ -108,11 +93,13 @@ int main(void) {
     mesh->name = "Structure";
     mesh->position = {0,0,0};
 
+
     auto* mesh2 = new ThreeD::Mesh();
     loadObjMesh(mesh2, "./TestObjects/Props-Boite-de-nuit.obj", "./TestObjects/materials/", verbose);
     mesh2->shader = basicShader;
     mesh2->name = "Props";
     mesh2->position = {0,0,0};
+
 
     meshes[0] = *mesh;
     meshes[1] = *mesh2;
@@ -152,7 +139,7 @@ int main(void) {
 
         processControls(window, camera, deltaTime);
 
-        app.render(window, meshes, meshCount, camera, light, true);
+        app.render(window, meshes, meshCount, camera, light);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

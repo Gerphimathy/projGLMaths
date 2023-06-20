@@ -89,7 +89,7 @@ namespace Window {
                 //TIME
                 const auto TIME = glGetUniformLocation(program,"u_time");
                 glUniform1f(TIME, time);
-                GLReportError("Time");
+                //GLReportError("Time");
 
                 //TRANSFORM
                 // une matrice OpenGL est definie en COLONNE
@@ -120,7 +120,7 @@ namespace Window {
                 //CAMERA
                 const auto PROJ_MAT = glGetUniformLocation(program, "u_projectionMatrix");
                 glUniformMatrix4fv(PROJ_MAT, 1, GL_FALSE, camera.projectionMatrix.ToArray().data());
-                GLReportError("Projection Matrix");
+                //GLReportError("Projection Matrix");
 
                 /*
 
@@ -147,27 +147,27 @@ namespace Window {
                 auto* lightPosition = new GLfloat[3] {(float) light.position.x, (float) light.position.y, (float) light.position.z};
                 const auto LIGHT_POSITION = glGetUniformLocation(program,"u_light.position");
                 glUniform3fv(LIGHT_POSITION, 1, lightPosition);
-                GLReportError("Light Position");
+                //GLReportError("Light Position");
 
                 auto* lightAmbient = new GLfloat[3] {(float) light.ambient.x, (float) light.ambient.y, (float) light.ambient.z};
                 const auto LIGHT_AMBIENT = glGetUniformLocation(program,"u_light.ambient");
                 glUniform3fv(LIGHT_AMBIENT, 1, lightAmbient);
-                GLReportError("Light Ambient");
+                //GLReportError("Light Ambient");
 
                 auto* lightDiffuse = new GLfloat[3] {(float) light.diffuse.x, (float) light.diffuse.y, (float) light.diffuse.z};
                 const auto LIGHT_DIFFUSE = glGetUniformLocation(program,"u_light.diffuse");
                 glUniform3fv(LIGHT_DIFFUSE, 1, lightDiffuse);
-                GLReportError("Light Diffuse");
+                //GLReportError("Light Diffuse");
 
                 auto * lightSpecular = new GLfloat[3] {(float) light.specular.x, (float) light.specular.y, (float) light.specular.z};
                 const auto LIGHT_SPECULAR = glGetUniformLocation(program,"u_light.specular");
                 glUniform3fv(LIGHT_SPECULAR, 1, lightSpecular);
-                GLReportError("Light Specular");
+                //GLReportError("Light Specular");
 
                 auto * lightColor = new GLfloat[3] {(float) light.color.x, (float) light.color.y, (float) light.color.z};
                 const auto LIGHT_COLOR = glGetUniformLocation(program,"u_light.color");
                 glUniform3fv(LIGHT_COLOR, 1, lightColor);
-                GLReportError("Light Color");
+                //GLReportError("Light Color");
 
 
                 //Face by Face
@@ -184,17 +184,17 @@ namespace Window {
                     const auto POSITION = glGetAttribLocation(program,"a_position");
                     glEnableVertexAttribArray(POSITION);
                     glVertexAttribPointer(POSITION, 3, GL_DOUBLE, GL_FALSE, stride, &vertices->position);
-                    GLReportError("Vertex Position");
+                    //GLReportError("Vertex Position");
 
                     const auto NORMAL = glGetAttribLocation(program,"a_normal");
                     glEnableVertexAttribArray(NORMAL);
                     glVertexAttribPointer(NORMAL, 3, GL_DOUBLE, GL_FALSE, stride, &vertices->normal);
-                    GLReportError("Vertex Normal");
+                    //GLReportError("Vertex Normal");
 
                     const auto TEX_COORD = glGetAttribLocation(program,"a_texCoord");
                     glEnableVertexAttribArray(TEX_COORD);
                     glVertexAttribPointer(TEX_COORD, 2, GL_DOUBLE, GL_FALSE, stride, &vertices->texcoords);
-                    GLReportError("Texture Coordinates");
+                    //GLReportError("Texture Coordinates");
 
                     uint32_t materialIndex = meshes[i].triangles[j].material_index;
                     ThreeD::Material material = meshes[i].materials[materialIndex];
@@ -203,27 +203,27 @@ namespace Window {
                     auto* materialAmbient = new GLfloat[3]{(float) material.ambient.x, (float) material.ambient.y, (float) material.ambient.z};
                     const auto MATERIAL_AMBIENT = glGetUniformLocation(program,"u_material.ambient");
                     glUniform3fv(MATERIAL_AMBIENT, 1, materialAmbient);
-                    GLReportError("Material Ambient");
+                    //GLReportError("Material Ambient");
 
                     auto* materialDiffuse = new GLfloat[3] {(float) material.diffuse.x, (float) material.diffuse.y, (float) material.diffuse.z};
                     const auto MATERIAL_DIFFUSE = glGetUniformLocation(program,"u_material.diffuse");
                     glUniform3fv(MATERIAL_DIFFUSE, 1, materialDiffuse);
-                    GLReportError("Material Diffuse");
+                    //GLReportError("Material Diffuse");
 
                     auto* materialSpecular = new GLfloat[3] {(float) material.specular.x, (float) material.specular.y, (float) material.specular.z};
                     const auto MATERIAL_SPECULAR = glGetUniformLocation(program,"u_material.specular");
                     glUniform3fv(MATERIAL_SPECULAR, 1, materialSpecular);
-                    GLReportError("Material Specular");
+                    //GLReportError("Material Specular");
 
                     const auto MATERIAL_SHININESS = glGetUniformLocation(program,"u_material.shininess");
                     glUniform1f(MATERIAL_SHININESS, material.shininess);
-                    GLReportError("Material Shininess");
+                    //GLReportError("Material Shininess");
 
                     //Texture
                     float texFlag = (material.texture != nullptr) ? 1.0f : 0.0f;
                     const auto USE_TEXTURE = glGetUniformLocation(program, "u_usetexture");
                     glUniform1f(USE_TEXTURE, texFlag);
-                    GLReportError("Use Texture");
+                    //GLReportError("Use Texture");
 
                     if(material.texture != nullptr){
                         glActiveTexture(GL_TEXTURE0);
@@ -232,13 +232,13 @@ namespace Window {
                         const auto TEXTURE = glGetUniformLocation(program, "u_texture");
                         glUniform1i(TEXTURE, 0);
 
-                        GLReportError("Texture");
+                        //GLReportError("Texture");
                     }
 
                     //DRAW
                     glDrawArrays(GL_TRIANGLES, 0, 3);
                     GLReportError("Draw");
-                    if (verbose) std::cerr << "Triangle Drawn" << std::endl;
+                    //if (verbose) std::cerr << "Triangle Drawn" << std::endl;
                 }
                 if(verbose) std::cerr << "Mesh Drawn" << std::endl << std::endl;
             }
