@@ -3,19 +3,42 @@
 #include "../shaders/GLShader.hpp"
 
 namespace ThreeD{
-    /*
-    void Mesh::CastFromArray(const float* array, int size){
-        vertexCount = size/8;
-        vertices = new ThreeD::Vertex[vertexCount];
+    void Mesh::CastFromArray(const float* vertexArray, const uint16_t* indices, int sizeVertices, int sizeIndices){
+        vertexCount = sizeVertices/8;
+        vertices = new Math::Vector3[vertexCount];
+
+        normalCount = sizeVertices/8;
+        normals = new Math::Vector3[normalCount];
+
+        uvCount = sizeVertices/8;
+        uvs = new Math::Vector2[uvCount];
 
         for(int i = 0; i < vertexCount; i++){
-            vertices[i].position = {array[i*8], array[i*8+1], array[i*8+2]};
+            vertices[i] = {vertexArray[i*8], vertexArray[i*8+1], vertexArray[i*8+2]};
 
-            vertices[i].normal = {array[i*8+3], array[i*8+4], array[i*8+5]};
+            normals[i] = {vertexArray[i*8+3], vertexArray[i*8+4], vertexArray[i*8+5]};
 
-            vertices[i].texcoords = {array[i * 8 + 6], array[i * 8 + 7]};
+            uvs[i] = {vertexArray[i * 8 + 6], vertexArray[i * 8 + 7]};
         }
-    }*/
+
+        triangleCount = sizeIndices/3;
+        triangles = new Triangle[triangleCount];
+        for (int i = 0; i < triangleCount; ++i) {
+            triangles[i].vertex_indices[0] = indices[i*3];
+            triangles[i].vertex_indices[1] = indices[i*3+1];
+            triangles[i].vertex_indices[2] = indices[i*3+2];
+
+            triangles[i].normal_indices[0] = indices[i*3];
+            triangles[i].normal_indices[1] = indices[i*3+1];
+            triangles[i].normal_indices[2] = indices[i*3+2];
+
+            triangles[i].uv_indices[0] = indices[i*3];
+            triangles[i].uv_indices[1] = indices[i*3+1];
+            triangles[i].uv_indices[2] = indices[i*3+2];
+
+            triangles[i].material_index = 0;
+        }
+    }
 
     void Mesh::loadShader(const char* vertexShader, const char* fragmentShader){
         shader = new GLShader();

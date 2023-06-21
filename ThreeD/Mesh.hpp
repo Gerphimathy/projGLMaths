@@ -57,7 +57,7 @@ namespace ThreeD {
 
         std::string name;
 
-        //void CastFromArray(const float* array, int size);
+        void CastFromArray(const float* vertexArray, const uint16_t* indices, int sizeVertices, int sizeIndices);
 
         void loadShader(const char* vertexShader, const char* fragmentShader);
 

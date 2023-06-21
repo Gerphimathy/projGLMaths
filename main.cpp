@@ -9,12 +9,14 @@
 #include <cstdint>
 #include <list>
 #include <chrono>
+#include <map>
 
 #include "ThreeD/Mesh.hpp"
 #include "ThreeD/Material.hpp"
 #include "TestObjects/DragonData.h"
 
 #include "loader/loadMesh.h"
+#include "TestObjects/DefaultMaterials.h"
 
 #include "window/Application.hpp"
 #include "window/Controls.hpp"
@@ -83,29 +85,69 @@ int main(void) {
     basicShader->Create();
 
     bool verbose = true;
+    auto defMats = defaultMaterials();
 
-    int meshCount = 2;
+    auto* structure = new ThreeD::Mesh();
+    loadObjMesh(structure, "./TestObjects/structure-boite-de-nuit.obj", "./TestObjects/materials/", verbose);
+    structure->shader = basicShader;
+    structure->name = "Structure";
+    structure->position = {0, 1, 0};
+
+    auto* props = new ThreeD::Mesh();
+    loadObjMesh(props, "./TestObjects/props-boite-de-nuit.obj", "./TestObjects/materials/", verbose);
+    props->shader = basicShader;
+    props->name = "Props";
+    props->position = {0, 1, 0};
+
+    auto* ball = new ThreeD::Mesh();
+    loadObjMesh(ball, "./TestObjects/boule-boite-de-nuit.obj", "./TestObjects/materials/", verbose);
+    ball->shader = basicShader;
+    ball->name = "Boule";
+    ball->position = {0, 1, 0};
+
+
+    int dragonVerticesCount = sizeof(DragonVertices) / sizeof(float);
+    int dragonIndicesCount = sizeof(DragonIndices) / sizeof(uint16_t);
+
+    auto* goldDragon = new ThreeD::Mesh();
+    goldDragon->CastFromArray(DragonVertices, DragonIndices, dragonVerticesCount, dragonIndicesCount);
+    goldDragon->shader = basicShader;
+    goldDragon->name = "Dragon Porte Entrée Gauche";
+    goldDragon->position = {0,1,0};
+    goldDragon->materials = new ThreeD::Material[1];
+    goldDragon->materials[0] = *defMats["Gold"];
+    goldDragon->materialCount = 1;
+
+    auto* silverDragon = new ThreeD::Mesh();
+    silverDragon->CastFromArray(DragonVertices, DragonIndices, dragonVerticesCount, dragonIndicesCount);
+    silverDragon->shader = basicShader;
+    silverDragon->name = "Dragon  Porte Entrée Droite";
+    silverDragon->position = {0,1,30};
+    silverDragon->materials = new ThreeD::Material[1];
+    silverDragon->materials[0] = *defMats["Silver"];
+    silverDragon->materialCount = 1;
+
+    auto* ebonyDragon = new ThreeD::Mesh();
+    ebonyDragon->CastFromArray(DragonVertices, DragonIndices, dragonVerticesCount, dragonIndicesCount);
+    ebonyDragon->shader = basicShader;
+    ebonyDragon->name = "Dragon Central";
+    ebonyDragon->position = {281,-9.5f,15};
+    ebonyDragon->scale = {1.5f, 1.5f, 1.5f};
+    ebonyDragon->materials = new ThreeD::Material[1];
+    ebonyDragon->materials[0] = *defMats["Ebony"];
+    ebonyDragon->materialCount = 1;
+
+    int meshCount = 6;
     auto* meshes = new ThreeD::Mesh[meshCount];
+    meshes[0] = *structure;
+    meshes[1] = *goldDragon;
+    meshes[2] = *silverDragon;
+    meshes[3] = *ebonyDragon;
+    meshes[4] = *ball;
 
-    auto* mesh = new ThreeD::Mesh();
-    loadObjMesh(mesh, "./TestObjects/Structure-Boite-de-nuit.obj", "./TestObjects/materials/", verbose);
-    mesh->shader = basicShader;
-    mesh->name = "Structure";
-    mesh->position = {0,0,0};
-
-
-    auto* mesh2 = new ThreeD::Mesh();
-    loadObjMesh(mesh2, "./TestObjects/Props-Boite-de-nuit.obj", "./TestObjects/materials/", verbose);
-    mesh2->shader = basicShader;
-    mesh2->name = "Props";
-    mesh2->position = {0,0,0};
-
-
-    meshes[0] = *mesh;
-    meshes[1] = *mesh2;
+    meshes[5] = *props;
 
     ThreeD::Camera camera = ThreeD::Camera();
-
 
     int width, height;
     glfwGetWindowSize(window, &width, &height);
@@ -122,7 +164,7 @@ int main(void) {
     camera.rotation = Math::Quaternion::Euler(0, M_PI, 0);
 
     ThreeD::Light light = ThreeD::Light();
-    light.position = Math::Vector3(281.0f, 6.f, 15.0f);
+    light.position = Math::Vector3(281.0f, 21.f, 15.0f);
 
     light.ambient = Math::Vector3(1.0f, 1.0f, 1.0f);
     light.diffuse = Math::Vector3(1.0f, 1.0f, 1.0f);
@@ -139,7 +181,9 @@ int main(void) {
 
         processControls(window, camera, deltaTime);
 
-        app.render(window, meshes, meshCount, camera, light);
+        app.render(window, meshes, meshCount, camera, light, false);
+
+        meshes[3].rotateAroundAnAxis(meshes[3].position, Math::Quaternion::Euler(0, M_PI*deltaTime, 0));
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -153,6 +197,10 @@ int main(void) {
 
     delete[] meshes;
     delete basicShader;
+
+    for (auto& mat : defMats) {
+        delete mat.second;
+    }
 
     glfwTerminate();
     return 0;
