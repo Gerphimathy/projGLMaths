@@ -122,7 +122,7 @@ int main(void) {
     camera.rotation = Math::Quaternion::Euler(0, M_PI, 0);
 
     ThreeD::Light light = ThreeD::Light();
-    light.position = Math::Vector3(0.0f, 20.f, 20.0f);
+    light.position = Math::Vector3(281.0f, 6.f, 15.0f);
 
     light.ambient = Math::Vector3(1.0f, 1.0f, 1.0f);
     light.diffuse = Math::Vector3(1.0f, 1.0f, 1.0f);

@@ -67,6 +67,8 @@ namespace Window {
         }
 
         void render(GLFWwindow* window, ThreeD::Mesh* meshes, uint32_t meshCount, ThreeD::Camera& camera, ThreeD::Light& light, bool verbose = false) {
+            if(verbose) std::cout << "Camera position: " << camera.position.x << " " << camera.position.y << " " << camera.position.z << std::endl;
+
             int width, height;
             glfwGetWindowSize(window, &width, &height);
 
