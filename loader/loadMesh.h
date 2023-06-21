@@ -130,6 +130,8 @@ void loadObjMesh(ThreeD::Mesh* output , const char* inputFile, const char* mater
     int j = 0;
     for (auto mat = objmaterials.begin(); mat < objmaterials.end(); ++mat) {
         if(verbose) std::cout << "Loading material " << mat->name << " as material " << j << std::endl;
+        output->materials[j].name = mat->name;
+
         output->materials[j].ambient.x = mat->ambient[0];
         output->materials[j].ambient.y = mat->ambient[1];
         output->materials[j].ambient.z = mat->ambient[2];

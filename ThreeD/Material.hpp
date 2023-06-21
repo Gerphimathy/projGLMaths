@@ -11,6 +11,8 @@ namespace ThreeD {
 
         Texture* texture;
 
+        std::string name;
+
         Material(){
             texture = nullptr;
             ambient = Math::Vector3(0.0f, 0.0f, 0.0f);
