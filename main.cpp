@@ -115,17 +115,21 @@ int main(void) {
 
     loadObjMesh(&meshes[0], "./TestObjects/structure-boite-de-nuit.obj", "./TestObjects/materials/");
     meshes[0].shader = basicShader;
+    meshes[0].name = "Structure Boite de nuit";
+
     loadObjMesh(&meshes[1], "./TestObjects/props-boite-de-nuit.obj", "./TestObjects/materials/");
     meshes[1].shader = basicShader;
+    meshes[1].name = "Props Boite de nuit";
+
     loadObjMesh(&meshes[2], "./TestObjects/boule-boite-de-nuit.obj", "./TestObjects/materials/");
     meshes[2].shader = basicShader;
+    meshes[2].name = "Boule Boite de nuit";
 
     meshes[3].CastFromArray(DragonVertices, (sizeof DragonVertices) / (sizeof DragonVertices[0]));
     meshes[3].indices = DragonIndices;
     meshes[3].indicesCount = (sizeof DragonIndices) / (sizeof DragonIndices[0]);
     meshes[3].shader = basicShader;
     meshes[3].name = "Dragon 1";
-    //Default materials is std::map<std::string, ThreeD::Material*>
     meshes[3].material = *defaultsMats["Jade"];
 
     std::chrono::time_point<std::chrono::system_clock> start, end;
@@ -139,9 +143,7 @@ int main(void) {
 
         processControls(window, camera, deltaTime);
 
-        light.rotateAroundAnAxis({0,0,0}, Math::Quaternion::Euler(0, -M_PI * deltaTime, 0) );
-
-        app.render(window, meshes, meshCount, camera, light);
+        app.render(window, meshes, meshCount, camera, light, true);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

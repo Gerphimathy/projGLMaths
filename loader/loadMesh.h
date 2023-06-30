@@ -38,7 +38,6 @@ std::vector<Math::Vector3> compToVec3(const std::vector<float>& components) {
     return vectors;
 }
 
-//TODO: Load material
 //See: https://github.com/canmom/rasteriser/blob/master/fileloader.cpp
 void loadObjMesh(ThreeD::Mesh* output , const char* inputFile, const char* materials_directory){
     tinyobj::attrib_t attrib;
@@ -70,11 +69,13 @@ void loadObjMesh(ThreeD::Mesh* output , const char* inputFile, const char* mater
     output->vertexCount = 0;
     output->indicesCount = 0;
     for(auto shape = shapes.begin(); shape < shapes.end(); ++shape){
-        output->vertexCount += shape->mesh.indices.size();
-        output->indicesCount += shape->mesh.indices.size();
+        for(auto face = shape->mesh.num_face_vertices.begin(); face < shape->mesh.num_face_vertices.end(); ++face){
+            output->vertexCount += *face;
+            output->indicesCount += *face;
+        }
     }
     output->vertices = new ThreeD::Vertex[output->vertexCount];
-    output->indices = new uint16_t [output->indicesCount];
+    //output->indices = new uint16_t [output->indicesCount];
 
     int vertexIndex = 0;
     for(auto shape = shapes.begin(); shape < shapes.end(); ++shape){

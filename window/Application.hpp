@@ -65,6 +65,8 @@ namespace Window {
             int width, height;
             glfwGetWindowSize(window, &width, &height);
 
+            if(verbose) std::cout << "Camera Position: " << camera.position << std::endl;
+
             glEnable(GL_CULL_FACE);
             glEnable(GL_DEPTH_TEST);
 
