@@ -13,6 +13,7 @@
 #include "ThreeD/Mesh.hpp"
 #include "ThreeD/Material.hpp"
 #include "TestObjects/DragonData.h"
+#include "TestObjects/DefaultMaterials.h"
 
 #include "loader/loadMesh.h"
 
@@ -108,7 +109,8 @@ int main(void) {
     light.specular = Math::Vector3(1.0f, 1.0f, 1.0f);
     light.color = Math::Vector3(1.0f, 1.0f, 1.0f);
 
-    int meshCount = 3;
+    auto defaultsMats = defaultMaterials();
+    int meshCount = 4;
     auto* meshes = new ThreeD::Mesh[meshCount];
 
     loadObjMesh(&meshes[0], "./TestObjects/structure-boite-de-nuit.obj", "./TestObjects/materials/");
@@ -118,6 +120,13 @@ int main(void) {
     loadObjMesh(&meshes[2], "./TestObjects/boule-boite-de-nuit.obj", "./TestObjects/materials/");
     meshes[2].shader = basicShader;
 
+    meshes[3].CastFromArray(DragonVertices, (sizeof DragonVertices) / (sizeof DragonVertices[0]));
+    meshes[3].indices = DragonIndices;
+    meshes[3].indicesCount = (sizeof DragonIndices) / (sizeof DragonIndices[0]);
+    meshes[3].shader = basicShader;
+    meshes[3].name = "Dragon 1";
+    //Default materials is std::map<std::string, ThreeD::Material*>
+    meshes[3].material = *defaultsMats["Jade"];
 
     std::chrono::time_point<std::chrono::system_clock> start, end;
 

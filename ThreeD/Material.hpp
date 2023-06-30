@@ -13,6 +13,15 @@ namespace ThreeD {
 
         Texture* texture;
 
+        Material& operator=(const Material& other){
+            ambient = other.ambient;
+            diffuse = other.diffuse;
+            specular = other.specular;
+            shininess = other.shininess;
+            texture = other.texture;
+            return *this;
+        }
+
         Material(){
             ambient = {0.1f, 0.1f, 0.1f};
             diffuse = {1.0f, 1.0f, 1.0f};
