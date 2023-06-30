@@ -45,12 +45,20 @@ std::map<std::string, ThreeD::Material*> defaultMaterials(){
     ebony->specular = Math::Vector3(0.5f, 0.5f, 0.5f);
     ebony->shininess = 128.0f;
 
+    auto* pinkGem = new ThreeD::Material();
+    pinkGem->name = "PinkGem";
+    pinkGem->ambient = Math::Vector3(1.f, 0.753f, 0.796f);
+    pinkGem->diffuse = Math::Vector3(0.4f, 0.4f, 0.4f);
+    pinkGem->specular = Math::Vector3(0.674597f, 0.674597f, 0.674597f);
+    pinkGem->shininess = 128.0f;
+
     return {
         {"Jade", jade},
         {"Emerald", emerald},
         {"Ruby", ruby},
         {"Gold", gold},
         {"Silver", silver},
-        {"Ebony", ebony}
+        {"Ebony", ebony},
+        {"PinkGem", pinkGem}
     };
 }

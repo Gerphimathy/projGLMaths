@@ -134,7 +134,7 @@ int main(void) {
     ebonyDragon->position = {281,-9.5f,15};
     ebonyDragon->scale = {1.5f, 1.5f, 1.5f};
     ebonyDragon->materials = new ThreeD::Material[1];
-    ebonyDragon->materials[0] = *defMats["Ebony"];
+    ebonyDragon->materials[0] = *defMats["PinkGem"];
     ebonyDragon->materialCount = 1;
 
     int meshCount = 6;
