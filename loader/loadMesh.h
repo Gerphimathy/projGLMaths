@@ -110,6 +110,7 @@ void loadObjMesh(ThreeD::Mesh* output , const char* inputFile, const char* mater
                 glBindTexture(GL_TEXTURE_2D, textureId);
 
                 output->material.texture->id = textureId;
+                output->material.name = mat->name;
 
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

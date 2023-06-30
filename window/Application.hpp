@@ -47,9 +47,9 @@ namespace Window {
         {
             for (int i = 0; i < meshCount; ++i) {
                 meshes[i].shader->Destroy();
-                if (meshes[i].material.texture) {
+                delete [] meshes[i].vertices;
+                if (meshes[i].material.texture)
                     glDeleteTextures(1, &meshes[i].material.texture->id);
-                }
             }
         }
 
